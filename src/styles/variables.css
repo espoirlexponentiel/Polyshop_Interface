@@ -1,0 +1,43 @@
+:root {
+  /* Charte graphique 7 SHOP */
+  --primary-blue: #0066ff;
+  --primary-blue-hover: #0052cc;
+  --primary-blue-light: #eef4ff;
+  
+  --accent-yellow: #ffb800;
+  --badge-yellow: #ffc107;
+  --badge-yellow-bg: #fff9e6;
+  --badge-yellow-text: #996500;
+  
+  --color-white: #ffffff;
+  --color-offwhite: #f8fafd;
+  --color-dark: #0f172a;
+  --color-gray-dark: #334155;
+  --color-gray-medium: #64748b;
+  --color-gray-light: #e2e8f0;
+  --color-gray-border: #eef2f6;
+
+  /* Couleurs de nuances */
+  --color-nuance-noir: #111827;
+  --color-nuance-blanc: #ffffff;
+  --color-nuance-bleu: #0066ff;
+  --color-nuance-jaune: #ffb800;
+  
+  /* Typographie & Rayons */
+  --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-full: 9999px;
+  
+  /* Ombres et Glassmorphism */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.06);
+  --shadow-lg: 0 16px 40px rgba(15, 23, 42, 0.1);
+  --shadow-floating: 0 20px 48px rgba(0, 102, 255, 0.15);
+  
+  /* Transitions */
+  --transition-fast: 0.18s ease;
+  --transition-normal: 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
