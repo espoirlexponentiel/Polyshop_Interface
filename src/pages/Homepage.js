@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import axios from '../api/axios';
-import { DEFAULT_PRODUCTS } from '../data/defaultProducts';
+import React, { useState } from 'react';
+import { useMarket } from '../context/MarketContext';
 import Navbar from '../components/layout/Navbar';
 import HeroSection from '../components/home/HeroSection';
 import TrustBar from '../components/home/TrustBar';
@@ -11,86 +10,138 @@ import CartDrawer from '../components/layout/CartDrawer';
 import Footer from '../components/layout/Footer';
 
 export default function HomePage() {
-  const [products, setProducts] = useState(DEFAULT_PRODUCTS);
+  const { markets, activeMarket, loading, error, switchMarket } = useMarket();
+  const [selectedCategory, setSelectedCategory] = useState('Toutes');
   const [selectedNuance, setSelectedNuance] = useState('Tous');
   const [sortBy, setSortBy] = useState('default');
   const [activeModalProduct, setActiveModalProduct] = useState(null);
 
-  // Tentative de récupération depuis l'API backend avec enrichissement
-  useEffect(() => {
-    axios.get('/products')
-      .then(res => {
-        if (res.data && res.data.length > 0) {
-          const merged = res.data.map(apiProd => {
-            const match = DEFAULT_PRODUCTS.find(d => d.id === apiProd.id || d.nom.toLowerCase() === apiProd.nom.toLowerCase());
-            return {
-              ...match,
-              ...apiProd,
-              prix: apiProd.prix || match?.prix || 25.0,
-              couleurs: match?.couleurs || ["Noir", "Blanc", "Bleu", "Jaune"],
-              tailles: match?.tailles || ["S", "M", "L", "XL", "XXL"],
-              thumbnails: match?.thumbnails || [apiProd.imageUrl],
-              rating: match?.rating || 4.9,
-              reviewCount: match?.reviewCount || 50,
-              pointsForts: match?.pointsForts || DEFAULT_PRODUCTS[0].pointsForts
-            };
-          });
-          setProducts(merged);
-        }
-      })
-      .catch(() => {
-        setProducts(DEFAULT_PRODUCTS);
-      });
-  }, []);
+  // Products from the currently active market (strictly from database)
+  const marketProducts = activeMarket?.products || [];
 
-  // Filtrage par Nuance de Couleur
-  const filteredProducts = products.filter(p => {
-    if (selectedNuance === 'Tous') return true;
-    return p.couleurs?.some(c => c.toLowerCase().includes(selectedNuance.toLowerCase()));
+  // Filter by Category
+  const categoryFiltered = marketProducts.filter(p => {
+    if (selectedCategory === 'Toutes') return true;
+    return p.category === selectedCategory;
   });
 
-  // Tri des produits
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    if (sortBy === 'price-asc') return a.prix - b.prix;
-    if (sortBy === 'price-desc') return b.prix - a.prix;
+  // Filter by Nuance
+  const nuanceFiltered = categoryFiltered.filter(p => {
+    if (selectedNuance === 'Tous') return true;
+    return p.couleurs?.some(c => typeof c === 'string' && c.toLowerCase().includes(selectedNuance.toLowerCase()));
+  });
+
+  // Sort products
+  const sortedProducts = [...nuanceFiltered].sort((a, b) => {
+    if (sortBy === 'price-asc') return (a.prix || 0) - (b.prix || 0);
+    if (sortBy === 'price-desc') return (b.prix || 0) - (a.prix || 0);
     if (sortBy === 'rating') return (b.rating || 0) - (a.rating || 0);
     return 0;
   });
+
+  // Other markets with active products
+  const otherMarketsWithProducts = markets.filter(m => m.id !== activeMarket?.id && (m.products?.length || 0) > 0);
 
   return (
     <div className="homepage-root">
       {/* 1. Header & Navigation */}
       <Navbar />
 
-      {/* 2. Hero Section avec mannequin noir posé sur le fond */}
+      {/* 2. Hero Section Dynamique selon le Marché */}
       <HeroSection />
 
-      {/* 3. Barre de Réassurance (4 Piliers) */}
+      {/* 4. Barre de Réassurance (4 Piliers) */}
       <TrustBar />
 
-      {/* 4. Section Catalogue & Grille Produits */}
-      <section className="catalog-section">
-        {/* Filtres de Nuances & Tri */}
-        <FilterBar 
-          selectedNuance={selectedNuance}
-          onSelectNuance={setSelectedNuance}
-          sortBy={sortBy}
-          onSortChange={setSortBy}
-        />
-
-        {/* Grille de cartes */}
-        <div className="products-grid">
-          {sortedProducts.map(product => (
-            <ProductCard 
-              key={product.id}
-              product={product}
-              onQuickView={(prod) => setActiveModalProduct(prod)}
-            />
-          ))}
+      {/* 5. Section Catalogue & Grille Produits du Marché */}
+      <section className="catalog-section" id="catalogue">
+        <div className="catalog-header-centered">
+          <span className="catalog-badge">
+            {activeMarket?.icone || '🏬'} RAYON {activeMarket?.nom?.toUpperCase() || '7 SHOP'}
+          </span>
+          <h2 className="catalog-title">Nos Produits Disponibles</h2>
+          <p className="catalog-subtitle">
+            Sélection officielle issue de notre catalogue en ligne pour le marché <strong>{activeMarket?.nom}</strong>.
+          </p>
         </div>
+
+        {loading ? (
+          <div className="loading-products-box">
+            <div className="spinner-blue"></div>
+            <p>Chargement des articles de la base de données...</p>
+          </div>
+        ) : error ? (
+          <div className="empty-market-banner error-banner">
+            <div className="empty-market-icon">⚠️</div>
+            <h3 className="empty-market-title">Erreur de connexion</h3>
+            <p className="empty-market-desc">{error}</p>
+          </div>
+        ) : marketProducts.length === 0 ? (
+          /* BANNIÈRE PAS D'ARTICLES DANS CE RAYON */
+          <div className="empty-market-banner">
+            <div className="empty-market-icon">📦</div>
+            <h3 className="empty-market-title">Aucun article disponible pour le moment</h3>
+            <p className="empty-market-desc">
+              Il n'y a actuellement aucun article enregistré dans la base de données pour le rayon <strong>{activeMarket?.nom}</strong>.
+            </p>
+
+            {otherMarketsWithProducts.length > 0 && (
+              <div className="empty-market-suggestions">
+                <span className="suggestions-label">Explorez nos rayons avec des articles disponibles :</span>
+                <div className="empty-market-actions">
+                  {otherMarketsWithProducts.map(m => (
+                    <button 
+                      key={m.id} 
+                      onClick={() => switchMarket(m.id)}
+                      className="btn-explore-market"
+                    >
+                      <span>{m.icone}</span>
+                      <span>Rayon {m.nom} ({m.products.length} article{m.products.length > 1 ? 's' : ''})</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <>
+            {/* Filtres de Catégories & Nuances & Tri */}
+            <FilterBar 
+              selectedCategory={selectedCategory}
+              onSelectCategory={setSelectedCategory}
+              selectedNuance={selectedNuance}
+              onSelectNuance={setSelectedNuance}
+              sortBy={sortBy}
+              onSortChange={setSortBy}
+            />
+
+            {/* Grille de cartes centrée */}
+            {sortedProducts.length > 0 ? (
+              <div className="products-grid">
+                {sortedProducts.map(product => (
+                  <ProductCard 
+                    key={product.id}
+                    product={product}
+                    onQuickView={(prod) => setActiveModalProduct(prod)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="no-products-box">
+                <p>Aucun produit ne correspond à ces filtres dans le marché <strong>{activeMarket?.nom}</strong>.</p>
+                <button 
+                  onClick={() => { setSelectedCategory('Toutes'); setSelectedNuance('Tous'); }}
+                  className="btn-reset-filters"
+                >
+                  Réinitialiser les filtres
+                </button>
+              </div>
+            )}
+          </>
+        )}
       </section>
 
-      {/* 5. Modale Détail Produit (Quick View) */}
+      {/* 6. Modale Détail Produit (Quick View) */}
       {activeModalProduct && (
         <ProductModal 
           product={activeModalProduct}
@@ -98,10 +149,10 @@ export default function HomePage() {
         />
       )}
 
-      {/* 6. Tiroir Panier Latéral */}
+      {/* 7. Tiroir Panier Latéral */}
       <CartDrawer />
 
-      {/* 7. Footer */}
+      {/* 8. Footer */}
       <Footer />
     </div>
   );

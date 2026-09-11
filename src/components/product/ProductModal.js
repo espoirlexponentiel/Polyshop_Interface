@@ -3,9 +3,25 @@ import { useCart } from '../../context/CartContext';
 
 export default function ProductModal({ product, onClose }) {
   const { addToCart } = useCart();
+
+  const colorsList = Array.isArray(product?.couleurs)
+    ? product.couleurs
+    : (typeof product?.couleurs === 'string' && product.couleurs ? product.couleurs.split(',').map(s => s.trim()) : ['Standard']);
+
+  const sizesList = Array.isArray(product?.tailles)
+    ? product.tailles
+    : (typeof product?.tailles === 'string' && product.tailles ? product.tailles.split(',').map(s => s.trim()) : ['Unique']);
+
+  const pointsFortsList = Array.isArray(product?.pointsForts)
+    ? product.pointsForts
+    : (typeof product?.pointsForts === 'string' && product.pointsForts ? product.pointsForts.split('\n').map(s => s.trim()).filter(Boolean) : []);
+
+  const categoryName = typeof product?.category === 'object' && product?.category 
+    ? product.category.nom 
+    : (product?.category || 'Rayon 7 Shop');
   
-  const [selectedColor, setSelectedColor] = useState(product?.couleurs?.[0] || 'Noir');
-  const [selectedSize, setSelectedSize] = useState(product?.tailles?.[0] || 'M');
+  const [selectedColor, setSelectedColor] = useState(colorsList[0] || 'Standard');
+  const [selectedSize, setSelectedSize] = useState(sizesList[0] || 'Unique');
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -13,13 +29,13 @@ export default function ProductModal({ product, onClose }) {
   // Synchronise images
   const allImages = product?.thumbnails && product.thumbnails.length > 0 
     ? product.thumbnails 
-    : [product?.imageUrl];
+    : [product?.imageUrl || 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80'];
 
   useEffect(() => {
     setActiveImageIndex(0);
     setQuantity(1);
-    setSelectedColor(product?.couleurs?.[0] || 'Noir');
-    setSelectedSize(product?.tailles?.[0] || 'M');
+    setSelectedColor(colorsList[0] || 'Standard');
+    setSelectedSize(sizesList[0] || 'Unique');
   }, [product]);
 
   if (!product) return null;
@@ -30,10 +46,11 @@ export default function ProductModal({ product, onClose }) {
   };
 
   const calculateTotalPrice = () => {
-    return (product.prix * quantity).toFixed(1).replace('.', ',');
+    return ((product.prix || 0) * quantity).toFixed(1).replace('.', ',');
   };
 
   const getDotClass = (colorName) => {
+    if (!colorName || typeof colorName !== 'string') return 'dot-noir';
     const c = colorName.toLowerCase();
     if (c.includes('blanc')) return 'dot-blanc';
     if (c.includes('bleu')) return 'dot-bleu';
@@ -90,18 +107,18 @@ export default function ProductModal({ product, onClose }) {
           <div className="modal-trust-cards">
             <div className="mini-trust-card">
               <div className="trust-ico">🚚</div>
-              <h6>Livraison 24h</h6>
-              <span>Express</span>
+              <h6>Livraison Rapide</h6>
+              <span>Partout</span>
             </div>
             <div className="mini-trust-card">
               <div className="trust-ico">🔄</div>
               <h6>30 Jours</h6>
-              <span>Retours gratuits</span>
+              <span>Retours simples</span>
             </div>
             <div className="mini-trust-card">
               <div className="trust-ico">🛡️</div>
               <h6>7 Shop Certifié</h6>
-              <span>Qualité premium</span>
+              <span>Qualité garantie</span>
             </div>
           </div>
         </div>
@@ -111,18 +128,18 @@ export default function ProductModal({ product, onClose }) {
           {/* Header Meta */}
           <div className="modal-header-meta">
             <span className="modal-cat-tag">
-              7 SHOP • {product.category?.toUpperCase()}
+              7 SHOP • {categoryName?.toUpperCase()}
             </span>
             <div className="modal-rating-badge">
               <span style={{ color: '#eab308' }}>★</span>
-              <span>{product.rating || '4.92'} / 5</span>
+              <span>{product.rating || '5.0'} / 5</span>
               <span style={{ color: '#854d0e', fontSize: '0.72rem' }}>
-                ({product.reviewCount || 168} avis)
+                ({product.reviewCount || 1} avis)
               </span>
             </div>
           </div>
 
-          {/* Title & Jacquard Subtitle */}
+          {/* Title & Subtitle */}
           <h2 className="modal-product-title">{product.nom}</h2>
           <p className="modal-product-subtitle">{product.sousTitre || product.description}</p>
 
@@ -130,25 +147,27 @@ export default function ProductModal({ product, onClose }) {
           <div className="modal-price-stock-row">
             <div className="modal-price-box">
               <span className="modal-price-now">
-                {product.prix?.toFixed(1).replace('.', ',')} €
+                {(product.prix || 0).toFixed(1).replace('.', ',')} €
               </span>
               {product.ancienPrix && (
                 <span className="modal-price-old">
-                  {product.ancienPrix?.toFixed(1).replace('.', ',')} €
+                  {(product.ancienPrix || 0).toFixed(1).replace('.', ',')} €
                 </span>
               )}
             </div>
-            <span className="stock-tag-instock">En stock</span>
+            <span className="stock-tag-instock">
+              {product.stock > 0 ? `En stock (${product.stock} disp.)` : 'Sur commande'}
+            </span>
           </div>
 
           {/* Color Selector */}
-          {product.couleurs && product.couleurs.length > 0 && (
+          {colorsList.length > 0 && (
             <div className="selector-group">
               <span className="selector-label">
-                Couleur : <strong style={{ color: 'var(--primary-blue)' }}>{selectedColor}</strong>
+                Option / Couleur : <strong style={{ color: 'var(--primary-blue)' }}>{selectedColor}</strong>
               </span>
               <div className="colors-selector-row">
-                {product.couleurs.map((color, idx) => (
+                {colorsList.map((color, idx) => (
                   <button
                     key={idx}
                     onClick={() => setSelectedColor(color)}
@@ -163,13 +182,13 @@ export default function ProductModal({ product, onClose }) {
           )}
 
           {/* Size Selector */}
-          {product.tailles && product.tailles.length > 0 && (
+          {sizesList.length > 0 && (
             <div className="selector-group">
               <span className="selector-label">
-                Taille : <strong style={{ color: 'var(--primary-blue)' }}>{selectedSize}</strong>
+                Format / Taille : <strong style={{ color: 'var(--primary-blue)' }}>{selectedSize}</strong>
               </span>
               <div className="sizes-selector-row">
-                {product.tailles.map((size, idx) => (
+                {sizesList.map((size, idx) => (
                   <button
                     key={idx}
                     onClick={() => setSelectedSize(size)}
@@ -188,44 +207,44 @@ export default function ProductModal({ product, onClose }) {
               className={`tab-btn ${activeTab === 'description' ? 'active' : ''}`}
               onClick={() => setActiveTab('description')}
             >
-              Description & Coupe
+              Description
             </button>
             <button
               className={`tab-btn ${activeTab === 'composition' ? 'active' : ''}`}
               onClick={() => setActiveTab('composition')}
             >
-              Composition & Matière
+              Composition & Détails
             </button>
             <button
               className={`tab-btn ${activeTab === 'avis' ? 'active' : ''}`}
               onClick={() => setActiveTab('avis')}
             >
-              Avis Clients ({product.reviewCount || 168})
+              Avis Clients ({product.reviewCount || 1})
             </button>
           </div>
 
           {/* Tab Content */}
           <div className="tab-content-box">
             {activeTab === 'description' && (
-              <p>{product.description}</p>
+              <p>{product.description || 'Produit de qualité supérieure sélectionné par 7 Shop.'}</p>
             )}
             {activeTab === 'composition' && (
-              <p>{product.composition || '100% Coton biologique haute densité. Finitions soignées anti-frottements.'}</p>
+              <p>{product.composition || 'Matières sélectionnées de premier choix selon les normes 7 Shop.'}</p>
             )}
             {activeTab === 'avis' && (
               <div>
-                <p><strong>Note globale : {product.rating || '4.92'}/5</strong> basé sur {product.reviewCount || 168} retours vérifiés.</p>
-                <p style={{ marginTop: '6px', color: '#64748b' }}>« Matière très agréable, ne bouge pas au lavage. Coupe impeccable ! » — Alexandre D.</p>
+                <p><strong>Note globale : {product.rating || '5.0'}/5</strong> basé sur {product.reviewCount || 1} retour(s) vérifié(s).</p>
+                <p style={{ marginTop: '6px', color: '#64748b' }}>« Produit conforme, excellente qualité et livraison soignée. »</p>
               </div>
             )}
           </div>
 
-          {/* Points Forts 7 Shop Checklist */}
-          {product.pointsForts && product.pointsForts.length > 0 && (
+          {/* Points Forts Checklist */}
+          {pointsFortsList.length > 0 && (
             <div className="points-forts-box">
               <h6>POINTS FORTS 7 SHOP :</h6>
               <ul className="points-forts-list">
-                {product.pointsForts.map((pt, idx) => (
+                {pointsFortsList.map((pt, idx) => (
                   <li key={idx}>
                     <span className="check-blue">✓</span>
                     <span>{pt}</span>

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useMarket } from '../../context/MarketContext';
 
 export default function Footer() {
+  const { activeMarket } = useMarket();
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
@@ -12,6 +14,8 @@ export default function Footer() {
       setEmail('');
     }
   };
+
+  const categories = activeMarket?.categories || ["Boxers", "Chaussettes", "Débardeurs", "Tapettes", "Pull-overs", "Ceintures", "Pantalons", "Oversizes", "Casquettes"];
 
   return (
     <footer className="footer-wrapper">
@@ -30,8 +34,7 @@ export default function Footer() {
             </div>
 
             <p className="footer-desc">
-              7 Shop (Seven Shop) — Les essentiels du quotidien : sous-vêtements (boxers, chaussettes, débardeurs), 
-              tapettes, pull-overs, ceintures, pantalons, coupes oversize et casquettes.
+              7 Shop — Plateforme de commerce d'excellence multi-marchés. Découvrez nos univers {activeMarket?.nom || 'Mode & Alimentation'} avec des matières nobles et des produits sélectionnés pour votre quotidien.
             </p>
 
             <div className="footer-signature-colors">
@@ -49,19 +52,17 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Column 2: Rayons & Articles */}
+          {/* Column 2: Rayons & Articles (Dynamique selon le Marché) */}
           <div className="footer-col">
-            <h4 className="footer-col-title">RAYONS & ARTICLES</h4>
+            <h4 className="footer-col-title">
+              RAYONS {activeMarket?.nom?.toUpperCase() || 'ARTICLES'}
+            </h4>
             <ul className="footer-links-list">
-              <li><a href="#catalogue">Boxers</a></li>
-              <li><a href="#catalogue">Chaussettes</a></li>
-              <li><a href="#catalogue">Débardeurs</a></li>
-              <li><a href="#catalogue">Tapettes</a></li>
-              <li><a href="#catalogue">Pull-overs</a></li>
-              <li><a href="#catalogue">Ceintures</a></li>
-              <li><a href="#catalogue">Pantalons</a></li>
-              <li><a href="#catalogue">Oversizes</a></li>
-              <li><a href="#catalogue">Casquettes</a></li>
+              {categories.slice(0, 9).map((cat, idx) => (
+                <li key={idx}>
+                  <a href="#catalogue">{cat}</a>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -70,10 +71,11 @@ export default function Footer() {
             <h4 className="footer-col-title">ESPACE & SERVICES</h4>
             <ul className="footer-links-list">
               <li><Link to="/login">Mon Espace Client</Link></li>
+              <li><Link to="/admin">Espace Administration 7 Shop</Link></li>
               <li><a href="#paiement">Paiement Google Pay Sécurisé</a></li>
               <li><a href="#confidentialite">Politique de Confidentialité</a></li>
               <li><a href="#cgv">Conditions Générales de Vente</a></li>
-              <li><a href="#guide-tailles">Guide des Tailles</a></li>
+              <li><a href="#guide-tailles">Guide & FAQ</a></li>
             </ul>
           </div>
 
