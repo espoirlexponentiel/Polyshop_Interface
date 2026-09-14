@@ -76,9 +76,16 @@ export default function CartDrawer() {
                   </span>
 
                   <div className="drawer-item-bottom">
-                    <span style={{ fontWeight: '800', color: 'var(--primary-blue)', fontSize: '0.95rem' }}>
-                      {(item.prix * item.quantity).toFixed(1).replace('.', ',')} €
-                    </span>
+                    <div>
+                      <span style={{ fontWeight: '800', color: 'var(--primary-blue)', fontSize: '0.95rem', display: 'block' }}>
+                        {(item.prix * item.quantity).toFixed(1).replace('.', ',')} €
+                      </span>
+                      {item.stock !== undefined && item.stock <= 5 && (
+                        <span style={{ fontSize: '0.7rem', color: '#ea580c', fontWeight: '750' }}>
+                          (Max : {item.stock} dispo)
+                        </span>
+                      )}
+                    </div>
 
                     {/* Quantity controls */}
                     <div className="quantity-picker" style={{ padding: '2px' }}>
@@ -95,7 +102,9 @@ export default function CartDrawer() {
                       <button 
                         className="qty-btn" 
                         style={{ width: '24px', height: '24px', fontSize: '0.8rem' }}
+                        disabled={item.stock !== undefined && item.quantity >= item.stock}
                         onClick={() => updateQuantity(item.cartItemId, 1)}
+                        title={item.stock !== undefined && item.quantity >= item.stock ? `Stock max (${item.stock})` : ''}
                       >
                         +
                       </button>

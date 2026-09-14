@@ -173,16 +173,16 @@ export default function AdminProductsPage() {
       {/* Products Table Panel */}
       <div className="admin-card-panel">
         <div className="admin-card-header">
-          <h3><span>🏷️</span> Catalogue BDD ({displayedProducts.length} articles)</h3>
+          <h3><span>🏷️</span> Catalogue Produits ({displayedProducts.length} articles)</h3>
         </div>
 
         {loading ? (
           <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>
-            <p>Chargement des données depuis la base de données...</p>
+            <p>Chargement des articles de votre boutique...</p>
           </div>
         ) : displayedProducts.length === 0 ? (
           <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>
-            <p style={{ fontSize: '1.1rem', fontWeight: '700', color: '#0f172a' }}>📦 Aucun article trouvé en base de données pour cette sélection</p>
+            <p style={{ fontSize: '1.1rem', fontWeight: '700', color: '#0f172a' }}>📦 Aucun article trouvé dans cette sélection</p>
             <p style={{ fontSize: '0.9rem', marginTop: '6px' }}>Cliquez sur <strong>+ Nouveau Produit</strong> pour ajouter un article.</p>
           </div>
         ) : (
@@ -255,7 +255,7 @@ export default function AdminProductsPage() {
                           </button>
                           <button 
                             onClick={async () => {
-                              if (window.confirm(`Supprimer l'article "${prod.nom}" de la base de données ?`)) {
+                              if (window.confirm(`Supprimer l'article "${prod.nom}" de la boutique ?`)) {
                                 await deleteProduct(prod.marketId, prod.id);
                               }
                             }}
@@ -279,7 +279,7 @@ export default function AdminProductsPage() {
         <div className="admin-modal-overlay">
           <div className="admin-modal-box">
             <div className="admin-modal-header">
-              <h3>{isCreating ? 'Ajouter un Produit (Base de Données)' : `Modifier : ${editingProduct?.nom}`}</h3>
+              <h3>{isCreating ? 'Ajouter un Produit au Catalogue' : `Modifier : ${editingProduct?.nom}`}</h3>
               <button onClick={() => { setEditingProduct(null); setIsCreating(false); }} className="btn-close-modal">✕</button>
             </div>
 
@@ -311,20 +311,27 @@ export default function AdminProductsPage() {
 
                   <div className="form-group-admin">
                     <label>Rayon / Catégorie</label>
-                    <input 
-                      type="text"
-                      list="categories-list"
-                      value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                      placeholder="Ex: T-shirts, Épicerie..."
-                      className="admin-input"
-                      required
-                    />
-                    <datalist id="categories-list">
-                      {currentMarketObj?.categories?.map(c => (
-                        <option key={c} value={c} />
-                      ))}
-                    </datalist>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                      <select
+                        value={formData.category}
+                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                        className="admin-select"
+                      >
+                        <option value="">-- Choisir un rayon --</option>
+                        {(currentMarketObj?.categories || []).map((c, idx) => {
+                          const val = typeof c === 'object' && c !== null ? (c.nom || c.name || '') : String(c || '');
+                          return <option key={idx} value={val}>{val}</option>;
+                        })}
+                      </select>
+                      <input 
+                        type="text"
+                        value={formData.category}
+                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                        placeholder="Ou nom du rayon..."
+                        className="admin-input"
+                        required
+                      />
+                    </div>
                   </div>
                 </div>
 

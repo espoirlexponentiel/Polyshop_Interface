@@ -10,7 +10,7 @@ export default function TrustBar() {
     {
       icon: "🔒",
       title: "Paiement Sécurisé",
-      desc: "Mobile Money & Carte Bancaire"
+      desc: "Mobile Money (T-Money & Flooz)"
     },
     {
       icon: "🔄",

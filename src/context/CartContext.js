@@ -24,15 +24,30 @@ export const CartProvider = ({ children }) => {
   }, [cartItems]);
 
   const addToCart = (product, selectedSize = 'M', selectedColor = 'Noir', quantity = 1) => {
+    const availableStock = product?.stock !== undefined && product?.stock !== null ? Number(product.stock) : 99;
+
+    if (availableStock <= 0) {
+      alert(`Désolé, l'article « ${product.nom} » est actuellement en rupture de stock.`);
+      return;
+    }
+
     setCartItems(prevItems => {
       const cartItemId = `${product.id}-${selectedSize}-${selectedColor}`;
       const existingIndex = prevItems.findIndex(item => item.cartItemId === cartItemId);
 
       if (existingIndex > -1) {
+        const currentQty = prevItems[existingIndex].quantity;
+        const newQty = Math.min(availableStock, currentQty + quantity);
+        if (currentQty >= availableStock) {
+          alert(`Quantité maximale en stock atteinte (${availableStock} disponible(s)).`);
+          return prevItems;
+        }
         const updated = [...prevItems];
-        updated[existingIndex].quantity += quantity;
+        updated[existingIndex].quantity = newQty;
+        updated[existingIndex].stock = availableStock;
         return updated;
       } else {
+        const initialQty = Math.min(availableStock, Math.max(1, quantity));
         return [
           ...prevItems,
           {
@@ -44,7 +59,9 @@ export const CartProvider = ({ children }) => {
             category: product.category,
             size: selectedSize,
             color: selectedColor,
-            quantity: quantity
+            quantity: initialQty,
+            stock: availableStock,
+            marketId: product.marketId || (product.categoryObj?.market?.id) || (typeof product.category === 'object' ? product.category?.market?.id : null) || 'vestimentaire'
           }
         ];
       }
@@ -61,8 +78,13 @@ export const CartProvider = ({ children }) => {
     setCartItems(prev => {
       return prev.map(item => {
         if (item.cartItemId === cartItemId) {
+          const maxStock = item.stock !== undefined && item.stock !== null ? item.stock : 99;
+          if (delta > 0 && item.quantity >= maxStock) {
+            alert(`Stock maximum disponible atteint pour cet article (${maxStock} unité(s)).`);
+            return item;
+          }
           const newQty = item.quantity + delta;
-          return newQty > 0 ? { ...item, quantity: newQty } : null;
+          return newQty > 0 ? { ...item, quantity: Math.min(maxStock, newQty) } : null;
         }
         return item;
       }).filter(Boolean);

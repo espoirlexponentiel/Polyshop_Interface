@@ -144,21 +144,36 @@ export default function ProductModal({ product, onClose }) {
           <p className="modal-product-subtitle">{product.sousTitre || product.description}</p>
 
           {/* Price & In-stock badge */}
-          <div className="modal-price-stock-row">
-            <div className="modal-price-box">
-              <span className="modal-price-now">
-                {(product.prix || 0).toFixed(1).replace('.', ',')} €
-              </span>
-              {product.ancienPrix && (
-                <span className="modal-price-old">
-                  {(product.ancienPrix || 0).toFixed(1).replace('.', ',')} €
-                </span>
-              )}
-            </div>
-            <span className="stock-tag-instock">
-              {product.stock > 0 ? `En stock (${product.stock} disp.)` : 'Sur commande'}
-            </span>
-          </div>
+          {(() => {
+            const availableStock = product?.stock !== undefined && product?.stock !== null ? Number(product.stock) : 0;
+            return (
+              <div className="modal-price-stock-row">
+                <div className="modal-price-box">
+                  <span className="modal-price-now">
+                    {(product.prix || 0).toFixed(1).replace('.', ',')} €
+                  </span>
+                  {product.ancienPrix && (
+                    <span className="modal-price-old">
+                      {(product.ancienPrix || 0).toFixed(1).replace('.', ',')} €
+                    </span>
+                  )}
+                </div>
+                {availableStock > 5 ? (
+                  <span className="stock-tag-instock">
+                    ✓ En stock ({availableStock} restants)
+                  </span>
+                ) : availableStock > 0 ? (
+                  <span className="stock-tag-instock" style={{ background: '#ffedd5', color: '#ea580c', border: '1px solid #fed7aa', fontWeight: '800' }}>
+                    ⚠️ Plus que {availableStock} restants !
+                  </span>
+                ) : (
+                  <span className="stock-tag-instock" style={{ background: '#fee2e2', color: '#dc2626', border: '1px solid #fca5a5', fontWeight: '800' }}>
+                    ❌ Rupture de stock
+                  </span>
+                )}
+              </div>
+            );
+          })()}
 
           {/* Color Selector */}
           {colorsList.length > 0 && (
@@ -255,35 +270,53 @@ export default function ProductModal({ product, onClose }) {
           )}
 
           {/* Modal Bottom Actions */}
-          <div className="modal-bottom-actions">
-            {/* Quantity Picker */}
-            <div className="quantity-picker">
-              <button 
-                className="qty-btn"
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              >
-                -
-              </button>
-              <span className="qty-val">{quantity}</span>
-              <button 
-                className="qty-btn"
-                onClick={() => setQuantity(quantity + 1)}
-              >
-                +
-              </button>
-            </div>
+          {(() => {
+            const availableStock = product?.stock !== undefined && product?.stock !== null ? Number(product.stock) : 0;
+            const isOutOfStock = availableStock <= 0;
 
-            {/* Big Add to Cart Button */}
-            <button 
-              className="btn-add-to-cart-big"
-              onClick={handleAddToCart}
-            >
-              <span>Ajouter au panier</span>
-              <span>•</span>
-              <span>{calculateTotalPrice()} €</span>
-              <span>›</span>
-            </button>
-          </div>
+            return (
+              <div className="modal-bottom-actions">
+                {/* Quantity Picker */}
+                <div className="quantity-picker">
+                  <button 
+                    className="qty-btn"
+                    disabled={isOutOfStock || quantity <= 1}
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  >
+                    -
+                  </button>
+                  <span className="qty-val">{isOutOfStock ? 0 : quantity}</span>
+                  <button 
+                    className="qty-btn"
+                    disabled={isOutOfStock || quantity >= availableStock}
+                    onClick={() => setQuantity(Math.min(availableStock, quantity + 1))}
+                    title={quantity >= availableStock ? `Stock maximum disponible (${availableStock})` : ''}
+                  >
+                    +
+                  </button>
+                </div>
+
+                {/* Big Add to Cart Button */}
+                <button 
+                  className="btn-add-to-cart-big"
+                  onClick={handleAddToCart}
+                  disabled={isOutOfStock}
+                  style={isOutOfStock ? { background: '#cbd5e1', color: '#64748b', cursor: 'not-allowed', boxShadow: 'none' } : {}}
+                >
+                  {isOutOfStock ? (
+                    <span>Article Épuisé</span>
+                  ) : (
+                    <>
+                      <span>Ajouter au panier</span>
+                      <span>•</span>
+                      <span>{calculateTotalPrice()} €</span>
+                      <span>›</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            );
+          })()}
         </div>
       </div>
     </div>

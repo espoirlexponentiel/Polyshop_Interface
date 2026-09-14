@@ -1,9 +1,16 @@
 import React from 'react';
-import { NavLink, Link, Outlet, useLocation } from 'react-router-dom';
+import { NavLink, Link, Outlet, useLocation, Navigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import '../../styles/admin.css';
 
 export default function AdminLayout({ children }) {
+  const { user, isAuthenticated, logout } = useAuth();
   const location = useLocation();
+
+  // 🔒 Protection stricte : Connexion obligatoire avec rôle ADMIN
+  if (!isAuthenticated || !user || user.role !== 'ADMIN') {
+    return <Navigate to="/login?redirect=admin" state={{ from: location }} replace />;
+  }
 
   const getPageMeta = () => {
     switch (location.pathname) {
@@ -78,10 +85,29 @@ export default function AdminLayout({ children }) {
         </nav>
 
         <div className="admin-sidebar-footer">
-          <Link to="/" className="btn-back-to-shop">
-            <span>←</span>
-            <span>Retour Boutique</span>
-          </Link>
+          <div style={{ padding: '10px 12px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', marginBottom: '10px', fontSize: '0.8rem' }}>
+            <div style={{ color: '#94a3b8', fontSize: '0.72rem' }}>Connecté en tant que :</div>
+            <div style={{ color: '#ffffff', fontWeight: '700', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {user.nom || user.email}
+            </div>
+            <div style={{ color: '#38bdf8', fontSize: '0.72rem', fontWeight: '800', marginTop: '2px' }}>
+              🛡️ {user.role}
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <Link to="/" className="btn-back-to-shop" style={{ flex: 1 }}>
+              <span>← Boutique</span>
+            </Link>
+            <button 
+              onClick={logout} 
+              className="btn-admin-danger"
+              style={{ padding: '8px 12px', fontSize: '0.78rem', borderRadius: '8px', border: 'none', cursor: 'pointer' }}
+              title="Se déconnecter"
+            >
+              🚪
+            </button>
+          </div>
         </div>
       </aside>
 
@@ -94,10 +120,17 @@ export default function AdminLayout({ children }) {
           </div>
 
           <div className="admin-topbar-actions">
-            <span className="admin-badge-role">ADMINISTRATEUR</span>
+            <span className="admin-badge-role">ADMIN : {user.nom || user.email}</span>
             <Link to="/" className="btn-admin-secondary" style={{ padding: '6px 14px', fontSize: '0.82rem' }}>
               👁️ Voir le site
             </Link>
+            <button 
+              onClick={logout}
+              className="btn-admin-danger"
+              style={{ padding: '6px 12px', fontSize: '0.82rem' }}
+            >
+              Déconnexion
+            </button>
           </div>
         </header>
 

@@ -7,7 +7,7 @@ import { useMarket } from '../../context/MarketContext';
 export default function Navbar() {
   const { cartCount, openDrawer } = useCart();
   const { user, isAuthenticated, logout } = useAuth();
-  const { markets, activeMarketId, activeMarket, switchMarket } = useMarket();
+  const { visibleMarkets, activeMarketId, activeMarket, switchMarket } = useMarket();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [marketDropdownOpen, setMarketDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -45,8 +45,24 @@ export default function Navbar() {
             Rayons
           </a>
           <Link to={isAuthenticated ? "/orders" : "/login"} className="nav-link-btn">
-            Mon Compte
+            Mes Commandes
           </Link>
+
+          {/* Admin Direct Access */}
+          {isAuthenticated && user?.role === 'ADMIN' && (
+            <Link 
+              to="/admin" 
+              className="nav-link-btn" 
+              style={{ 
+                background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', 
+                color: '#ffb800', 
+                fontWeight: '800',
+                border: '1px solid #334155'
+              }}
+            >
+              🛡️ Espace Admin
+            </Link>
+          )}
 
           {/* Sélecteur de Marché / Univers avec Dropdown */}
           <div className="nav-market-dropdown-wrap" ref={dropdownRef}>
@@ -71,7 +87,7 @@ export default function Navbar() {
                   <span className="panel-subtitle">Cliquez pour changer d'univers</span>
                 </div>
                 <div className="nav-market-list">
-                  {markets.map((market) => {
+                  {visibleMarkets.map((market) => {
                     const isSelected = market.id === activeMarketId;
                     return (
                       <button
@@ -107,19 +123,44 @@ export default function Navbar() {
 
         {/* Action Buttons */}
         <div className="nav-actions">
-          {isAuthenticated && (
+          {isAuthenticated ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--color-dark)' }}>
-                {user?.nom || user?.email || 'Client'}
-              </span>
+              <Link 
+                to={user?.role === 'ADMIN' ? "/admin" : "/orders"}
+                style={{ 
+                  fontSize: '0.85rem', 
+                  fontWeight: '700', 
+                  color: 'var(--color-dark)',
+                  background: '#f8fafc',
+                  padding: '6px 12px',
+                  borderRadius: '8px',
+                  border: '1px solid #e2e8f0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px'
+                }}
+                title="Gérer mon compte"
+              >
+                <span>👤</span>
+                <span>{user?.nom || user?.email || 'Mon Compte'}</span>
+              </Link>
               <button 
                 onClick={logout}
                 className="nav-link-btn"
-                style={{ padding: '6px 12px', fontSize: '0.78rem', background: '#f1f5f9' }}
+                style={{ padding: '6px 12px', fontSize: '0.78rem', background: '#fee2e2', color: '#dc2626', fontWeight: '700' }}
+                title="Se déconnecter"
               >
                 Déconnexion
               </button>
             </div>
+          ) : (
+            <Link 
+              to="/login"
+              className="nav-link-btn"
+              style={{ background: 'var(--primary-blue-light)', color: 'var(--primary-blue)', fontWeight: '800' }}
+            >
+              Connexion
+            </Link>
           )}
 
           {/* Cart Button with Count Badge */}
@@ -178,7 +219,7 @@ export default function Navbar() {
           <div className="mobile-markets-section">
             <div className="mobile-markets-title">🏪 Sélectionner un Marché :</div>
             <div className="mobile-markets-grid">
-              {markets.map((market) => {
+              {visibleMarkets.map((market) => {
                 const isSelected = market.id === activeMarketId;
                 return (
                   <button

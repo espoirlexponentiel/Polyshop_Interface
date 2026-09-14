@@ -11,7 +11,10 @@ export default function FilterBar({
 }) {
   const { activeMarket } = useMarket();
 
-  const categories = ['Toutes', ...(activeMarket?.categories || [])];
+  const rawCategories = ['Toutes', ...(activeMarket?.categories || [])];
+  const categories = rawCategories.map(c => 
+    typeof c === 'object' && c !== null ? (c.nom || c.name || '') : String(c || '')
+  ).filter(Boolean);
 
   const nuances = [
     { label: 'Toutes nuances', value: 'Tous' },

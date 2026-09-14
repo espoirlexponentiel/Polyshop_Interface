@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 const AuthContext = createContext();
 
@@ -29,22 +29,29 @@ export const AuthProvider = ({ children }) => {
     }
   }, [user]);
 
-  const login = (newToken, userData) => {
+  const login = useCallback((newToken, userData) => {
+    if (newToken) {
+      localStorage.setItem('7shop_token', newToken);
+    }
+    if (userData) {
+      localStorage.setItem('7shop_user', JSON.stringify(userData));
+    }
     setToken(newToken);
     setUser(userData);
-  };
+  }, []);
 
-  const logout = () => {
-    setToken(null);
-    setUser(null);
+  const logout = useCallback(() => {
     localStorage.removeItem('7shop_token');
     localStorage.removeItem('7shop_user');
-  };
+    localStorage.removeItem('token');
+    setToken(null);
+    setUser(null);
+  }, []);
 
-  const loginWithGoogle = () => {
+  const loginWithGoogle = useCallback(() => {
     // Redirection vers l'endpoint OAuth2 Google du backend Spring Boot
     window.location.href = 'http://localhost:8080/oauth2/authorization/google';
-  };
+  }, []);
 
   return (
     <AuthContext.Provider

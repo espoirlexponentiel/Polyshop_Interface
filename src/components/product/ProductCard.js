@@ -16,8 +16,15 @@ export default function ProductCard({ product, onQuickView }) {
     ? product.category.nom 
     : (product.category || 'Rayon 7 Shop');
 
+  const stock = product.stock !== undefined && product.stock !== null ? Number(product.stock) : 0;
+  const isOutOfStock = stock <= 0;
+
   const handleQuickAdd = (e) => {
     e.stopPropagation();
+    if (isOutOfStock) {
+      if (onQuickView) onQuickView(product);
+      return;
+    }
     const defaultColor = colorsList[0] || 'Noir';
     const defaultSize = sizesList[0] || 'M';
     addToCart(product, defaultSize, defaultColor, 1);
@@ -44,10 +51,16 @@ export default function ProductCard({ product, onQuickView }) {
         {product.badge && (
           <span className="card-badge">{product.badge}</span>
         )}
+        {isOutOfStock && (
+          <span className="card-badge" style={{ background: '#dc2626', top: '10px', left: '10px' }}>
+            Rupture
+          </span>
+        )}
         <img 
           src={displayImage} 
           alt={product.nom} 
           loading="lazy"
+          style={isOutOfStock ? { opacity: 0.6 } : {}}
         />
       </div>
 
@@ -70,6 +83,23 @@ export default function ProductCard({ product, onQuickView }) {
       <p className="card-subtitle" title={product.sousTitre || product.description}>
         {product.sousTitre || product.description}
       </p>
+
+      {/* Stock remaining info */}
+      <div style={{ marginTop: '6px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+        {stock > 5 ? (
+          <span style={{ fontSize: '0.74rem', color: '#16a34a', fontWeight: '700' }}>
+            ✓ En stock ({stock} restants)
+          </span>
+        ) : stock > 0 ? (
+          <span style={{ fontSize: '0.74rem', color: '#ea580c', fontWeight: '800', background: '#ffedd5', padding: '2px 6px', borderRadius: '4px' }}>
+            ⚠️ Plus que {stock} restants !
+          </span>
+        ) : (
+          <span style={{ fontSize: '0.74rem', color: '#dc2626', fontWeight: '800', background: '#fee2e2', padding: '2px 6px', borderRadius: '4px' }}>
+            ✕ Rupture de stock
+          </span>
+        )}
+      </div>
 
       {/* Color Dots */}
       {colorsList.length > 0 && (
@@ -95,10 +125,12 @@ export default function ProductCard({ product, onQuickView }) {
 
         <button 
           onClick={handleQuickAdd}
-          className="btn-add-quick"
-          title="Ajouter au panier"
+          disabled={isOutOfStock}
+          className={`btn-add-quick ${isOutOfStock ? 'btn-disabled' : ''}`}
+          style={isOutOfStock ? { background: '#cbd5e1', color: '#64748b', cursor: 'not-allowed', boxShadow: 'none' } : {}}
+          title={isOutOfStock ? "Article en rupture" : "Ajouter au panier"}
         >
-          + Ajouter
+          {isOutOfStock ? 'Épuisé' : '+ Ajouter'}
         </button>
       </div>
     </div>

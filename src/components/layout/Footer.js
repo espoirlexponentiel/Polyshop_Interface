@@ -72,7 +72,7 @@ export default function Footer() {
             <ul className="footer-links-list">
               <li><Link to="/login">Mon Espace Client</Link></li>
               <li><Link to="/admin">Espace Administration 7 Shop</Link></li>
-              <li><a href="#paiement">Paiement Google Pay Sécurisé</a></li>
+              <li><a href="#paiement">Paiement Mobile Money Sécurisé</a></li>
               <li><a href="#confidentialite">Politique de Confidentialité</a></li>
               <li><a href="#cgv">Conditions Générales de Vente</a></li>
               <li><a href="#guide-tailles">Guide & FAQ</a></li>
@@ -122,11 +122,8 @@ export default function Footer() {
           </p>
 
           <div className="payment-badges-row">
-            <span className="pay-badge">G Pay</span>
-            <span className="pay-badge"> Pay</span>
-            <span className="pay-badge">VISA</span>
-            <span className="pay-badge">Mastercard</span>
-            <span className="pay-badge">CB 3D-Secure</span>
+            <span className="pay-badge">+228 99965306</span>
+            <span className="pay-badge">+228 96146504</span>
           </div>
         </div>
       </div>

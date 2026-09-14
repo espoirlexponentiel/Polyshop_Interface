@@ -8,11 +8,12 @@ import axios from '../api/axios';
 export default function RegisterPage() {
   const [nom, setNom] = useState('');
   const [email, setEmail] = useState('');
+  const [telephone, setTelephone] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { loginWithGoogle } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -21,12 +22,43 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      await axios.post('/users/register', { nom, email, password });
-      alert('✅ Compte créé avec succès ! Connectez-vous.');
-      navigate('/login');
+      const cleanEmail = email.trim().toLowerCase();
+      const cleanNom = nom.trim();
+      const cleanTel = telephone.trim();
+
+      // 1. Création du compte
+      await axios.post('/users/register', { 
+        nom: cleanNom,
+        username: cleanNom,
+        email: cleanEmail,
+        telephone: cleanTel,
+        password 
+      });
+
+      // 2. Connexion automatique immédiate
+      try {
+        const loginRes = await axios.post('/users/login', { email: cleanEmail, password });
+        if (loginRes.data && loginRes.data.token) {
+          const loggedUser = loginRes.data.user || {
+            email: cleanEmail,
+            role: loginRes.data.role || 'USER',
+            nom: cleanNom,
+            telephone: cleanTel
+          };
+          login(loginRes.data.token, loggedUser);
+          navigate('/', { replace: true });
+          return;
+        }
+      } catch (loginErr) {
+        console.warn('Auto-connexion post inscription:', loginErr);
+      }
+
+      // Redirection boutique si auto-login
+      navigate('/', { replace: true });
     } catch (err) {
       console.error('Erreur inscription:', err);
-      setError('Impossible de créer le compte. Cet email est peut-être déjà utilisé.');
+      const serverMsg = err.response?.data?.error || err.response?.data?.message;
+      setError(serverMsg || 'Impossible de créer le compte. Cet email est peut-être déjà utilisé.');
     } finally {
       setLoading(false);
     }
@@ -115,6 +147,27 @@ export default function RegisterPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="votre@email.com"
+                style={{
+                  width: '100%',
+                  padding: '11px 14px',
+                  borderRadius: 'var(--radius-md)',
+                  border: '1px solid var(--color-gray-light)',
+                  fontFamily: 'inherit',
+                  fontSize: '0.9rem'
+                }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', marginBottom: '6px' }}>
+                Numéro de téléphone / WhatsApp
+              </label>
+              <input
+                type="tel"
+                value={telephone}
+                onChange={(e) => setTelephone(e.target.value)}
+                required
+                placeholder="Ex: +228 90 00 00 00"
                 style={{
                   width: '100%',
                   padding: '11px 14px',

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useMarket } from '../../context/MarketContext';
+import axios from '../../api/axios';
 
 export default function AdminMarketsPage() {
-  const { markets, updateMarket, createMarket, deleteMarket, switchMarket } = useMarket();
+  const { markets, dbMarkets, updateMarket, createMarket, deleteMarket, toggleMarketVisibility, switchMarket, seedDefaultMarkets } = useMarket();
   const [editingMarket, setEditingMarket] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   // Form state for editing / creating
   const [formData, setFormData] = useState({
@@ -15,7 +17,8 @@ export default function AdminMarketsPage() {
     couleurHeroBg: 'linear-gradient(135deg, #ffffff 0%, #f4f8ff 50%, #fffbf0 100%)',
     heroTitre: '',
     heroSousTitre: '',
-    heroImageUrl: ''
+    heroImageUrl: '',
+    isActive: true
   });
 
   const handleOpenEdit = (market) => {
@@ -29,7 +32,8 @@ export default function AdminMarketsPage() {
       couleurHeroBg: market.couleurHeroBg || 'linear-gradient(135deg, #ffffff 0%, #f4f8ff 50%, #fffbf0 100%)',
       heroTitre: market.heroTitre || '',
       heroSousTitre: market.heroSousTitre || '',
-      heroImageUrl: market.heroImageUrl || ''
+      heroImageUrl: market.heroImageUrl || '',
+      isActive: market.isActive !== false
     });
   };
 
@@ -44,16 +48,40 @@ export default function AdminMarketsPage() {
       couleurHeroBg: 'linear-gradient(135deg, #ffffff 0%, #f0fdf4 50%, #f4f8ff 100%)',
       heroTitre: 'Nouveau Marché 7 Shop\nLes Meilleurs Produits',
       heroSousTitre: 'Découvrez notre nouvelle sélection d’articles de qualité supérieure.',
-      heroImageUrl: '/images/hero-model.png?v=5'
+      heroImageUrl: '/images/hero-model.png?v=5',
+      isActive: true
     });
   };
 
-  const handleSave = (e) => {
+  const handleImageFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const uploadData = new FormData();
+    uploadData.append('file', file);
+
+    setUploadingImage(true);
+    try {
+      const res = await axios.post('/markets/upload-image', uploadData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      if (res.data?.url) {
+        setFormData(prev => ({ ...prev, heroImageUrl: res.data.url }));
+      }
+    } catch (err) {
+      console.error('❌ Erreur upload Cloudinary marché:', err);
+      alert('Erreur lors du téléversement de l\'image vers Cloudinary.');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleSave = async (e) => {
     e.preventDefault();
     if (isCreating) {
-      createMarket(formData);
+      await createMarket(formData);
     } else if (editingMarket) {
-      updateMarket(editingMarket.id, formData);
+      await updateMarket(editingMarket.id, formData);
     }
     setEditingMarket(null);
     setIsCreating(false);
@@ -62,51 +90,90 @@ export default function AdminMarketsPage() {
   return (
     <div className="admin-markets-root">
       {/* Top Header Actions */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
         <div>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0f172a' }}>Marchés & Thèmes Disponibles ({markets.length})</h2>
-          <p style={{ fontSize: '0.85rem', color: '#64748b' }}>Chaque marché dispose de sa couleur dominante, de son Hero (textes & photos) et de ses rayons.</p>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0f172a' }}>Gestion des Marchés & Univers ({markets.length})</h2>
+          <p style={{ fontSize: '0.85rem', color: '#64748b' }}>Configurez les thèmes, visuels, rayons et la visibilité publique de chaque marché.</p>
         </div>
-        <button onClick={handleOpenCreate} className="btn-admin-primary">
-          + Créer un Nouveau Marché
-        </button>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          {dbMarkets?.length === 0 && (
+            <button 
+              onClick={seedDefaultMarkets} 
+              className="btn-admin-secondary"
+              style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+            >
+              🌱 Réinitialiser les 2 Marchés 7 Shop
+            </button>
+          )}
+          <button onClick={handleOpenCreate} className="btn-admin-primary">
+            + Créer un Nouveau Marché
+          </button>
+        </div>
       </div>
 
       {/* Markets Cards Grid */}
       <div className="markets-admin-grid">
         {markets.map(market => {
+          const isDefaultRoot = market.id === 'vestimentaire' || market.id === 'alimentation-generale';
+          const isVisible = market.isActive !== false;
+
           return (
-            <div key={market.id} className="market-admin-card">
+            <div key={market.id} className="market-admin-card" style={{ opacity: isVisible ? 1 : 0.82, border: isVisible ? '1px solid #e2e8f0' : '2px dashed #94a3b8' }}>
               <div 
                 className="market-card-topbar"
                 style={{ backgroundColor: market.couleurPrimaire || '#0066ff' }}
               >
                 <div className="market-card-title-group">
-                  <span style={{ fontSize: '1.5rem' }}>{market.icone}</span>
+                  <span style={{ fontSize: '1.5rem' }}>{market.icone || '🏬'}</span>
                   <div>
                     <h3>{market.nom}</h3>
                     <span style={{ fontSize: '0.72rem', opacity: 0.9 }}>Slug : {market.slug || market.id}</span>
                   </div>
                 </div>
 
-                <button 
-                  onClick={() => switchMarket(market.id)}
-                  style={{
-                    padding: '4px 10px',
-                    background: 'rgba(255, 255, 255, 0.25)',
-                    color: '#ffffff',
-                    border: '1px solid rgba(255, 255, 255, 0.4)',
-                    borderRadius: '9999px',
-                    fontSize: '0.75rem',
-                    fontWeight: '800',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Activer
-                </button>
+                <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                  <button 
+                    onClick={() => switchMarket(market.id)}
+                    style={{
+                      padding: '4px 10px',
+                      background: 'rgba(255, 255, 255, 0.25)',
+                      color: '#ffffff',
+                      border: '1px solid rgba(255, 255, 255, 0.4)',
+                      borderRadius: '9999px',
+                      fontSize: '0.75rem',
+                      fontWeight: '800',
+                      cursor: 'pointer'
+                    }}
+                    title="Sélectionner ce marché dans l'application"
+                  >
+                    Activer
+                  </button>
+                </div>
               </div>
 
               <div className="market-card-body">
+                {/* Visibilité Status Badge */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: isVisible ? '#f0fdf4' : '#f8fafc', borderRadius: '8px', border: `1px solid ${isVisible ? '#bbf7d0' : '#e2e8f0'}`, marginBottom: '12px' }}>
+                  <span style={{ fontSize: '0.8rem', fontWeight: '800', color: isVisible ? '#166534' : '#64748b', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    {isVisible ? '🟢 Visible aux clients' : '👁️ Masqué aux clients'}
+                  </span>
+                  <button
+                    onClick={() => toggleMarketVisibility(market.id)}
+                    style={{
+                      padding: '4px 10px',
+                      fontSize: '0.75rem',
+                      fontWeight: '700',
+                      borderRadius: '6px',
+                      border: '1px solid #cbd5e1',
+                      background: '#ffffff',
+                      cursor: 'pointer',
+                      color: isVisible ? '#dc2626' : '#16a34a'
+                    }}
+                  >
+                    {isVisible ? 'Masquer' : 'Rendre Visible'}
+                  </button>
+                </div>
+
                 <div className="market-detail-row">
                   <span className="market-detail-label">Couleur Dominante :</span>
                   <div className="market-color-sample">
@@ -124,8 +191,13 @@ export default function AdminMarketsPage() {
                 </div>
 
                 <div className="market-detail-row">
-                  <span className="market-detail-label">Catégories :</span>
-                  <span style={{ fontWeight: '700', color: '#0f172a' }}>{market.categories?.length || 0} rayons</span>
+                  <span className="market-detail-label">Rayons / Catégories :</span>
+                  <span style={{ fontWeight: '700', color: '#0f172a' }}>{market.categories?.length || 0} rayon(s)</span>
+                </div>
+
+                <div className="market-detail-row">
+                  <span className="market-detail-label">Produits Associés :</span>
+                  <span style={{ fontWeight: '700', color: '#0f172a' }}>{market.products?.length || 0} article(s)</span>
                 </div>
 
                 {/* Hero Preview Box */}
@@ -151,14 +223,32 @@ export default function AdminMarketsPage() {
                   ✏️ Modifier Thème & Textes
                 </button>
 
-                {markets.length > 1 && (
+                {isDefaultRoot ? (
+                  <span 
+                    style={{
+                      padding: '8px 12px',
+                      background: '#f1f5f9',
+                      color: '#475569',
+                      borderRadius: '8px',
+                      fontSize: '0.75rem',
+                      fontWeight: '800',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}
+                    title="Les 2 marchés par défaut (Mode & Alimentation) ne peuvent pas être supprimés"
+                  >
+                    🔒 Protégé
+                  </span>
+                ) : (
                   <button 
-                    onClick={() => {
-                      if (window.confirm(`Supprimer le marché "${market.nom}" ?`)) {
-                        deleteMarket(market.id);
+                    onClick={async () => {
+                      if (window.confirm(`Supprimer définitivement le marché "${market.nom}" et tous ses rayons associés ?`)) {
+                        await deleteMarket(market.id);
                       }
                     }}
                     className="btn-admin-danger"
+                    title="Supprimer ce marché"
                   >
                     🗑️
                   </button>
@@ -273,17 +363,65 @@ export default function AdminMarketsPage() {
                   />
                 </div>
 
-                {/* Hero Image URL */}
+                {/* Hero Image URL & Cloudinary Upload */}
                 <div className="form-group-admin">
-                  <label>Photo / Visuel du Hero (URL ou chemin d'image)</label>
+                  <label>Photo / Visuel du Hero (Upload Cloudinary ou URL)</label>
+                  
+                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '8px' }}>
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      onChange={handleImageFileUpload}
+                      style={{ fontSize: '0.85rem' }}
+                      disabled={uploadingImage}
+                    />
+                    {uploadingImage && (
+                      <span style={{ fontSize: '0.8rem', color: '#0066ff', fontWeight: '700' }}>
+                        ⏳ Téléversement vers Cloudinary...
+                      </span>
+                    )}
+                  </div>
+
                   <input 
                     type="text"
                     value={formData.heroImageUrl}
                     onChange={(e) => setFormData({ ...formData, heroImageUrl: e.target.value })}
-                    placeholder="/images/hero-model.png?v=5 ou URL externe"
+                    placeholder="https://res.cloudinary.com/... ou /images/hero-model.png"
                     required
                     className="admin-input"
                   />
+
+                  {formData.heroImageUrl && (
+                    <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <img 
+                        src={formData.heroImageUrl} 
+                        alt="Aperçu Hero" 
+                        style={{ width: '64px', height: '64px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #cbd5e1' }} 
+                        onError={(e) => { e.target.style.display = 'none'; }}
+                      />
+                      <span style={{ fontSize: '0.75rem', color: '#16a34a', fontWeight: '700' }}>
+                        ✓ Visuel prêt
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Visibilité Publique Switch */}
+                <div className="form-group-admin" style={{ padding: '12px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', margin: 0 }}>
+                    <input 
+                      type="checkbox"
+                      checked={formData.isActive}
+                      onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                      style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                    />
+                    <div>
+                      <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>Rendre ce marché visible aux clients</strong>
+                      <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
+                        Si décoché, le marché, ses rayons et ses produits seront masqués sur le site public.
+                      </div>
+                    </div>
+                  </label>
                 </div>
 
                 {/* Live Preview Box */}

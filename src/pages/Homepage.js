@@ -10,7 +10,7 @@ import CartDrawer from '../components/layout/CartDrawer';
 import Footer from '../components/layout/Footer';
 
 export default function HomePage() {
-  const { markets, activeMarket, loading, error, switchMarket } = useMarket();
+  const { visibleMarkets, activeMarket, loading, error, switchMarket, fetchProducts } = useMarket();
   const [selectedCategory, setSelectedCategory] = useState('Toutes');
   const [selectedNuance, setSelectedNuance] = useState('Tous');
   const [sortBy, setSortBy] = useState('default');
@@ -39,8 +39,8 @@ export default function HomePage() {
     return 0;
   });
 
-  // Other markets with active products
-  const otherMarketsWithProducts = markets.filter(m => m.id !== activeMarket?.id && (m.products?.length || 0) > 0);
+  // Other visible markets with active products
+  const otherMarketsWithProducts = (visibleMarkets || []).filter(m => m.id !== activeMarket?.id && (m.products?.length || 0) > 0);
 
   return (
     <div className="homepage-root">
@@ -68,13 +68,20 @@ export default function HomePage() {
         {loading ? (
           <div className="loading-products-box">
             <div className="spinner-blue"></div>
-            <p>Chargement des articles de la base de données...</p>
+            <p>Chargement des articles de votre boutique...</p>
           </div>
         ) : error ? (
           <div className="empty-market-banner error-banner">
             <div className="empty-market-icon">⚠️</div>
-            <h3 className="empty-market-title">Erreur de connexion</h3>
+            <h3 className="empty-market-title">Connexion temporairement indisponible</h3>
             <p className="empty-market-desc">{error}</p>
+            <button 
+              onClick={() => fetchProducts()} 
+              className="btn-explore-market"
+              style={{ marginTop: '16px', background: 'var(--primary-blue, #0066FF)', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}
+            >
+              🔄 Actualiser la page
+            </button>
           </div>
         ) : marketProducts.length === 0 ? (
           /* BANNIÈRE PAS D'ARTICLES DANS CE RAYON */
@@ -82,7 +89,7 @@ export default function HomePage() {
             <div className="empty-market-icon">📦</div>
             <h3 className="empty-market-title">Aucun article disponible pour le moment</h3>
             <p className="empty-market-desc">
-              Il n'y a actuellement aucun article enregistré dans la base de données pour le rayon <strong>{activeMarket?.nom}</strong>.
+              Les articles pour le rayon <strong>{activeMarket?.nom}</strong> seront très bientôt disponibles.
             </p>
 
             {otherMarketsWithProducts.length > 0 && (

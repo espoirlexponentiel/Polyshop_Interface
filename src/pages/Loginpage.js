@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/layout/Navbar';
@@ -11,9 +11,56 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { login, loginWithGoogle } = useAuth();
+  const { login, loginWithGoogle, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Redirection si déjà connecté
+  useEffect(() => {
+    if (isAuthenticated && !location.search.includes('token')) {
+      if (user?.role === 'ADMIN') {
+        navigate('/admin', { replace: true });
+      } else {
+        navigate('/', { replace: true });
+      }
+    }
+  }, [isAuthenticated, user, navigate, location.search]);
+
+  // Détection du retour OAuth Google (token dans les paramètres d'URL)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const urlToken = params.get('token');
+    const urlEmail = params.get('email');
+    const urlRole = params.get('role') || 'USER';
+    const urlNom = params.get('nom') || urlEmail;
+    const redirectParam = params.get('redirect') || '';
+
+    if (urlToken) {
+      const userData = { email: urlEmail, role: urlRole, nom: urlNom, username: urlNom };
+      login(urlToken, userData);
+
+      // Charger le profil complet s'il existe déjà
+      axios.get('/users/me', { headers: { Authorization: `Bearer ${urlToken}` } })
+        .then(res => {
+          if (res.data?.user) {
+            login(urlToken, res.data.user);
+          }
+        })
+        .catch(() => {});
+
+      if (urlRole === 'ADMIN' || redirectParam === 'admin') {
+        navigate('/admin', { replace: true });
+      } else if (redirectParam === 'cart' || redirectParam === 'checkout') {
+        navigate('/cart', { replace: true });
+      } else if (redirectParam === 'orders') {
+        navigate('/orders', { replace: true });
+      } else {
+        navigate('/', { replace: true });
+      }
+    } else if (params.get('error') === 'oauth2_failed') {
+      setError('Échec de la connexion avec Google. Veuillez réessayer ou utiliser votre email.');
+    }
+  }, [location.search, login, navigate]);
 
   const queryParams = new URLSearchParams(location.search);
   const redirectTarget = queryParams.get('redirect') || '';
@@ -24,20 +71,36 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const res = await axios.post('/users/login', { email, password });
+      const cleanEmail = email.trim().toLowerCase();
+      const res = await axios.post('/users/login', { email: cleanEmail, password });
       if (res.data && res.data.token) {
-        login(res.data.token, res.data.user || { email });
-        if (redirectTarget === 'cart' || redirectTarget === 'checkout') {
-          navigate('/cart');
+        const loggedUser = res.data.user || {
+          email: res.data.email || cleanEmail,
+          role: res.data.role || 'USER',
+          nom: res.data.nom || res.data.username || cleanEmail
+        };
+
+        // Sauvegarde immédiate dans le contexte et localStorage
+        login(res.data.token, loggedUser);
+
+        // Redirection vers la destination ou directement la boutique
+        if (redirectTarget === 'admin' || (loggedUser.role === 'ADMIN' && !redirectTarget)) {
+          navigate('/admin', { replace: true });
+        } else if (redirectTarget === 'cart' || redirectTarget === 'checkout') {
+          navigate('/cart', { replace: true });
+        } else if (redirectTarget === 'orders') {
+          navigate('/orders', { replace: true });
         } else {
-          navigate('/');
+          // 🛍️ Redirection directe vers la boutique pour les clients
+          navigate('/', { replace: true });
         }
       } else {
         setError('Identifiants incorrects.');
       }
     } catch (err) {
       console.error('Erreur login:', err);
-      setError('Impossible de se connecter. Vérifiez vos identifiants.');
+      const serverMsg = err.response?.data?.error || err.response?.data?.message;
+      setError(serverMsg || 'Impossible de se connecter. Vérifiez vos identifiants.');
     } finally {
       setLoading(false);
     }
