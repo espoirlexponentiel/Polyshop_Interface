@@ -146,8 +146,11 @@ export default function AdminDashboardPage() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
-            <Link to="/admin/marches" className="btn-admin-primary" style={{ textAlign: 'center', textDecoration: 'none' }}>
-              + Créer un Marché
+            <Link to="/admin/parametres" className="btn-admin-primary" style={{ textAlign: 'center', textDecoration: 'none', background: 'linear-gradient(135deg, #ffb800 0%, #d97706 100%)', color: '#111827', fontWeight: '800' }}>
+              🎨 Personnaliser le Logo & le Nom de Marque
+            </Link>
+            <Link to="/admin/marches" className="btn-admin-secondary" style={{ textAlign: 'center', textDecoration: 'none' }}>
+              + Créer ou Configurer un Marché
             </Link>
             <Link to="/admin/categories" className="btn-admin-secondary" style={{ textAlign: 'center', textDecoration: 'none' }}>
               📂 Gérer les Catégories / Rayons

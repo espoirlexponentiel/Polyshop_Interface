@@ -1,10 +1,12 @@
 import React from 'react';
 import { NavLink, Link, Outlet, useLocation, Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useSiteConfig } from '../../context/SiteConfigContext';
 import '../../styles/admin.css';
 
 export default function AdminLayout({ children }) {
   const { user, isAuthenticated, logout } = useAuth();
+  const { siteConfig } = useSiteConfig();
   const location = useLocation();
 
   // 🔒 Protection stricte : Connexion obligatoire avec rôle ADMIN
@@ -14,6 +16,8 @@ export default function AdminLayout({ children }) {
 
   const getPageMeta = () => {
     switch (location.pathname) {
+      case '/admin/parametres':
+        return { title: 'Identité, Logo & Textes', sub: 'Personnalisez le logo, le nom de marque et le slogan de votre boutique en temps réel' };
       case '/admin/marches':
         return { title: 'Gestion des Marchés & Thèmes', sub: 'Personnalisez les couleurs, visuels Hero et textes de chaque marché' };
       case '/admin/categories':
@@ -23,7 +27,7 @@ export default function AdminLayout({ children }) {
       case '/admin/commandes':
         return { title: 'Suivi des Commandes', sub: 'Consultez et traitez les commandes clients en temps réel' };
       default:
-        return { title: 'Tableau de Bord & Statistiques', sub: 'Vue d’ensemble des performances de votre plateforme 7 Shop' };
+        return { title: 'Tableau de Bord & Statistiques', sub: 'Vue d’ensemble des performances de votre plateforme' };
     }
   };
 
@@ -34,9 +38,17 @@ export default function AdminLayout({ children }) {
       {/* 1. Sidebar Navigation */}
       <aside className="admin-sidebar">
         <div className="admin-sidebar-header">
-          <div className="admin-brand-badge">7</div>
+          {siteConfig?.logoUrl ? (
+            <img 
+              src={siteConfig.logoUrl} 
+              alt={siteConfig.brandName || 'Logo'} 
+              style={{ maxHeight: '38px', maxWidth: '42px', objectFit: 'contain', borderRadius: '8px' }} 
+            />
+          ) : (
+            <div className="admin-brand-badge">{siteConfig?.brandBadge || '7'}</div>
+          )}
           <div>
-            <div className="admin-brand-title">7 SHOP</div>
+            <div className="admin-brand-title">{siteConfig?.brandName || '7 SHOP'}</div>
             <div className="admin-brand-sub">ADMIN CONSOLE</div>
           </div>
         </div>
@@ -49,6 +61,14 @@ export default function AdminLayout({ children }) {
           >
             <span className="admin-nav-icon">📊</span>
             <span>Dashboard & Stats</span>
+          </NavLink>
+
+          <NavLink 
+            to="/admin/parametres" 
+            className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}
+          >
+            <span className="admin-nav-icon">🎨</span>
+            <span>Logo & Identité</span>
           </NavLink>
 
           <NavLink 

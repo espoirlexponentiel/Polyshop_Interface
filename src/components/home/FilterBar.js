@@ -4,8 +4,6 @@ import { useMarket } from '../../context/MarketContext';
 export default function FilterBar({ 
   selectedCategory, 
   onSelectCategory, 
-  selectedNuance, 
-  onSelectNuance, 
   sortBy, 
   onSortChange 
 }) {
@@ -15,14 +13,6 @@ export default function FilterBar({
   const categories = rawCategories.map(c => 
     typeof c === 'object' && c !== null ? (c.nom || c.name || '') : String(c || '')
   ).filter(Boolean);
-
-  const nuances = [
-    { label: 'Toutes nuances', value: 'Tous' },
-    { label: 'Blanc', value: 'Blanc', dotClass: 'dot-blanc' },
-    { label: 'Bleu', value: 'Bleu', dotClass: 'dot-bleu' },
-    { label: 'Jaune', value: 'Jaune', dotClass: 'dot-jaune' },
-    { label: 'Noir', value: 'Noir', dotClass: 'dot-noir' }
-  ];
 
   return (
     <div className="filterbar-wrapper" id="catalogue">
@@ -39,27 +29,8 @@ export default function FilterBar({
         ))}
       </div>
 
-      {/* 2. Secondary Filter Bar (Nuance & Sorting) */}
-      <div className="filterbar-container">
-        {/* Nuances Filter */}
-        <div className="filter-left">
-          <span className="filter-label">
-            <span>🎨</span> Nuance :
-          </span>
-          <div className="filter-pills-group">
-            {nuances.map(n => (
-              <button
-                key={n.value}
-                onClick={() => onSelectNuance(n.value)}
-                className={`filter-pill ${selectedNuance === n.value ? 'active' : ''}`}
-              >
-                {n.dotClass && <span className={`nuance-dot ${n.dotClass}`}></span>}
-                <span>{n.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
+      {/* 2. Secondary Filter Bar (Sorting only) */}
+      <div className="filterbar-container" style={{ justifyContent: 'flex-end' }}>
         {/* Sorting Dropdown */}
         <div className="filter-right">
           <span style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--color-gray-medium)' }}>

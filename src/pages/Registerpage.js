@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useSiteConfig } from '../context/SiteConfigContext';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import axios from '../api/axios';
@@ -14,6 +15,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
 
   const { login, loginWithGoogle } = useAuth();
+  const { siteConfig } = useSiteConfig();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -80,10 +82,18 @@ export default function RegisterPage() {
         }}>
           {/* Header */}
           <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-            <div className="brand-badge-7" style={{ margin: '0 auto 12px' }}>7</div>
+            {siteConfig?.logoUrl ? (
+              <img 
+                src={siteConfig.logoUrl} 
+                alt={siteConfig.brandName} 
+                style={{ maxHeight: '44px', maxWidth: '140px', objectFit: 'contain', margin: '0 auto 12px', display: 'block' }} 
+              />
+            ) : (
+              <div className="brand-badge-7" style={{ margin: '0 auto 12px' }}>{siteConfig?.brandBadge || '7'}</div>
+            )}
             <h2 style={{ fontSize: '1.6rem', fontWeight: '900', color: 'var(--color-dark)' }}>Inscription</h2>
             <p style={{ fontSize: '0.85rem', color: 'var(--color-gray-medium)', marginTop: '4px' }}>
-              Rejoignez l'univers 7 Shop et profitez de la livraison rapide
+              Rejoignez l'univers {siteConfig?.brandName || '7 Shop'} et profitez de la livraison rapide
             </p>
           </div>
 

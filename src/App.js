@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import { MarketProvider } from "./context/MarketContext";
+import { SiteConfigProvider } from "./context/SiteConfigContext";
 
 // Public Pages
 import HomePage from "./pages/Homepage";
@@ -18,35 +19,39 @@ import AdminMarketsPage from "./pages/admin/AdminMarketsPage";
 import AdminCategoriesPage from "./pages/admin/AdminCategoriesPage";
 import AdminProductsPage from "./pages/admin/AdminProductsPage";
 import AdminOrdersPage from "./pages/admin/AdminOrdersPage";
+import AdminSettingsPage from "./pages/admin/AdminSettingsPage";
 
 function App() {
   return (
-    <MarketProvider>
-      <AuthProvider>
-        <CartProvider>
-          <Router>
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<HomePage />} />
-              <Route path="/cart" element={<CartPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="/orders" element={<OrdersPage />} />
+    <SiteConfigProvider>
+      <MarketProvider>
+        <AuthProvider>
+          <CartProvider>
+            <Router>
+              <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<HomePage />} />
+                <Route path="/cart" element={<CartPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/orders" element={<OrdersPage />} />
 
-              {/* Admin Routes with Sidebar Layout */}
-              <Route path="/admin" element={<AdminLayout><AdminDashboardPage /></AdminLayout>} />
-              <Route path="/admin/marches" element={<AdminLayout><AdminMarketsPage /></AdminLayout>} />
-              <Route path="/admin/categories" element={<AdminLayout><AdminCategoriesPage /></AdminLayout>} />
-              <Route path="/admin/produits" element={<AdminLayout><AdminProductsPage /></AdminLayout>} />
-              <Route path="/admin/commandes" element={<AdminLayout><AdminOrdersPage /></AdminLayout>} />
+                {/* Admin Routes with Sidebar Layout */}
+                <Route path="/admin" element={<AdminLayout><AdminDashboardPage /></AdminLayout>} />
+                <Route path="/admin/parametres" element={<AdminLayout><AdminSettingsPage /></AdminLayout>} />
+                <Route path="/admin/marches" element={<AdminLayout><AdminMarketsPage /></AdminLayout>} />
+                <Route path="/admin/categories" element={<AdminLayout><AdminCategoriesPage /></AdminLayout>} />
+                <Route path="/admin/produits" element={<AdminLayout><AdminProductsPage /></AdminLayout>} />
+                <Route path="/admin/commandes" element={<AdminLayout><AdminOrdersPage /></AdminLayout>} />
 
-              {/* Fallback legacy route */}
-              <Route path="/commandes" element={<AdminLayout><AdminOrdersPage /></AdminLayout>} />
-            </Routes>
-          </Router>
-        </CartProvider>
-      </AuthProvider>
-    </MarketProvider>
+                {/* Fallback legacy route */}
+                <Route path="/commandes" element={<AdminLayout><AdminOrdersPage /></AdminLayout>} />
+              </Routes>
+            </Router>
+          </CartProvider>
+        </AuthProvider>
+      </MarketProvider>
+    </SiteConfigProvider>
   );
 }
 

@@ -3,11 +3,13 @@ import { Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useMarket } from '../../context/MarketContext';
+import { useSiteConfig } from '../../context/SiteConfigContext';
 
 export default function Navbar() {
   const { cartCount, openDrawer } = useCart();
   const { user, isAuthenticated, logout } = useAuth();
   const { visibleMarkets, activeMarketId, activeMarket, switchMarket } = useMarket();
+  const { siteConfig } = useSiteConfig();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [marketDropdownOpen, setMarketDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -30,9 +32,17 @@ export default function Navbar() {
       <div className="navbar-container">
         {/* Brand Logo */}
         <Link to="/" className="nav-brand">
-          <div className="brand-badge-7">7</div>
+          {siteConfig?.logoUrl ? (
+            <img 
+              src={siteConfig.logoUrl} 
+              alt={siteConfig.brandName || 'Logo'} 
+              style={{ maxHeight: '40px', maxWidth: '140px', objectFit: 'contain' }}
+            />
+          ) : (
+            <div className="brand-badge-7">{siteConfig?.brandBadge || '7'}</div>
+          )}
           <div className="brand-text-block">
-            <div className="brand-title">7 SHOP</div>
+            <div className="brand-title">{siteConfig?.brandName || '7 SHOP'}</div>
           </div>
         </Link>
 

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useMarket } from '../../context/MarketContext';
+import { useSiteConfig } from '../../context/SiteConfigContext';
 
 export default function Footer() {
   const { activeMarket } = useMarket();
+  const { siteConfig } = useSiteConfig();
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
@@ -26,30 +28,24 @@ export default function Footer() {
           {/* Column 1: Brand & Contact */}
           <div className="footer-col brand-col">
             <div className="footer-brand-header">
-              <div className="brand-badge-7">7</div>
+              {siteConfig?.logoUrl ? (
+                <img 
+                  src={siteConfig.logoUrl} 
+                  alt={siteConfig.brandName || 'Logo'} 
+                  style={{ maxHeight: '40px', maxWidth: '120px', objectFit: 'contain' }}
+                />
+              ) : (
+                <div className="brand-badge-7">{siteConfig?.brandBadge || 'P'}</div>
+              )}
               <div>
-                <div className="brand-title">7 SHOP</div>
-                <div className="brand-official-tag">SEVEN SHOP OFFICIAL</div>
+                <div className="brand-title">{siteConfig?.brandName || 'PolyShop'}</div>
+                <div className="brand-official-tag">{siteConfig?.tagline || 'POLYSHOP OFFICIAL'}</div>
               </div>
             </div>
 
             <p className="footer-desc">
-              7 Shop — Plateforme de commerce d'excellence multi-marchés. Découvrez nos univers {activeMarket?.nom || 'Mode & Alimentation'} avec des matières nobles et des produits sélectionnés pour votre quotidien.
+              {siteConfig?.brandName || 'PolyShop'} — Plateforme de commerce d'excellence multi-marchés. Découvrez nos univers {activeMarket?.nom || 'Mode & Alimentation'} avec des matières nobles et des produits sélectionnés pour votre quotidien.
             </p>
-
-            <div className="footer-signature-colors">
-              <span className="sig-label">Couleurs signatures :</span>
-              <div className="sig-pills">
-                <span className="sig-pill"><span className="nuance-dot dot-blanc"></span> Blanc</span>
-                <span className="sig-pill"><span className="nuance-dot dot-bleu"></span> Bleu</span>
-                <span className="sig-pill"><span className="nuance-dot dot-jaune"></span> Jaune</span>
-              </div>
-            </div>
-
-            <div className="footer-contact-info">
-              <p>Service Client 7 Shop : <a href="mailto:contact@7shop.com">contact@7shop.com</a></p>
-              <p>Assistance directe : <strong>+33 (0)1 89 20 07 07</strong> (9h - 19h)</p>
-            </div>
           </div>
 
           {/* Column 2: Rayons & Articles (Dynamique selon le Marché) */}
@@ -71,7 +67,7 @@ export default function Footer() {
             <h4 className="footer-col-title">ESPACE & SERVICES</h4>
             <ul className="footer-links-list">
               <li><Link to="/login">Mon Espace Client</Link></li>
-              <li><Link to="/admin">Espace Administration 7 Shop</Link></li>
+              <li><Link to="/admin">Espace Administration {siteConfig?.brandName || 'PolyShop'}</Link></li>
               <li><a href="#paiement">Paiement Mobile Money Sécurisé</a></li>
               <li><a href="#confidentialite">Politique de Confidentialité</a></li>
               <li><a href="#cgv">Conditions Générales de Vente</a></li>
@@ -79,10 +75,10 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Column 4: Club 7 Shop Newsletter */}
+          {/* Column 4: Club Newsletter */}
           <div className="footer-col club-col">
             <h4 className="footer-col-title club-title">
-              <span className="club-icon">💥</span> CLUB 7 SHOP
+              <span className="club-icon">💥</span> CLUB {siteConfig?.brandName?.toUpperCase() || 'POLYSHOP'}
             </h4>
             
             <p className="club-desc">
@@ -118,7 +114,7 @@ export default function Footer() {
         {/* Footer Bottom Bar */}
         <div className="footer-bottom-bar">
           <p className="copyright-text">
-            © 2026 7 Shop (Seven Shop) • Tous droits réservés.
+            © 2026 {siteConfig?.brandName || 'PolyShop'} (PolyShop) • Tous droits réservés.
           </p>
 
           <div className="payment-badges-row">

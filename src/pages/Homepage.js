@@ -12,7 +12,6 @@ import Footer from '../components/layout/Footer';
 export default function HomePage() {
   const { visibleMarkets, activeMarket, loading, error, switchMarket, fetchProducts } = useMarket();
   const [selectedCategory, setSelectedCategory] = useState('Toutes');
-  const [selectedNuance, setSelectedNuance] = useState('Tous');
   const [sortBy, setSortBy] = useState('default');
   const [activeModalProduct, setActiveModalProduct] = useState(null);
 
@@ -25,14 +24,8 @@ export default function HomePage() {
     return p.category === selectedCategory;
   });
 
-  // Filter by Nuance
-  const nuanceFiltered = categoryFiltered.filter(p => {
-    if (selectedNuance === 'Tous') return true;
-    return p.couleurs?.some(c => typeof c === 'string' && c.toLowerCase().includes(selectedNuance.toLowerCase()));
-  });
-
   // Sort products
-  const sortedProducts = [...nuanceFiltered].sort((a, b) => {
+  const sortedProducts = [...categoryFiltered].sort((a, b) => {
     if (sortBy === 'price-asc') return (a.prix || 0) - (b.prix || 0);
     if (sortBy === 'price-desc') return (b.prix || 0) - (a.prix || 0);
     if (sortBy === 'rating') return (b.rating || 0) - (a.rating || 0);
@@ -112,12 +105,10 @@ export default function HomePage() {
           </div>
         ) : (
           <>
-            {/* Filtres de Catégories & Nuances & Tri */}
+            {/* Filtres de Catégories & Tri */}
             <FilterBar 
               selectedCategory={selectedCategory}
               onSelectCategory={setSelectedCategory}
-              selectedNuance={selectedNuance}
-              onSelectNuance={setSelectedNuance}
               sortBy={sortBy}
               onSortChange={setSortBy}
             />
@@ -137,7 +128,7 @@ export default function HomePage() {
               <div className="no-products-box">
                 <p>Aucun produit ne correspond à ces filtres dans le marché <strong>{activeMarket?.nom}</strong>.</p>
                 <button 
-                  onClick={() => { setSelectedCategory('Toutes'); setSelectedNuance('Tous'); }}
+                  onClick={() => setSelectedCategory('Toutes')}
                   className="btn-reset-filters"
                 >
                   Réinitialiser les filtres

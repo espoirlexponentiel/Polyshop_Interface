@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useSiteConfig } from '../context/SiteConfigContext';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import axios from '../api/axios';
@@ -12,6 +13,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   const { login, loginWithGoogle, isAuthenticated, user } = useAuth();
+  const { siteConfig } = useSiteConfig();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -57,8 +59,17 @@ export default function LoginPage() {
       } else {
         navigate('/', { replace: true });
       }
-    } else if (params.get('error') === 'oauth2_failed') {
-      setError('Échec de la connexion avec Google. Veuillez réessayer ou utiliser votre email.');
+    } else if (params.get('error')) {
+      const err = params.get('error');
+      if (err === 'oauth2_failed') {
+        setError('Échec de la connexion avec Google. Veuillez vérifier votre compte ou réessayer.');
+      } else {
+        try {
+          setError(`Échec de la connexion Google : ${decodeURIComponent(err)}`);
+        } catch {
+          setError(`Échec de la connexion Google : ${err}`);
+        }
+      }
     }
   }, [location.search, login, navigate]);
 
@@ -122,10 +133,18 @@ export default function LoginPage() {
         }}>
           {/* Header */}
           <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-            <div className="brand-badge-7" style={{ margin: '0 auto 12px' }}>7</div>
+            {siteConfig?.logoUrl ? (
+              <img 
+                src={siteConfig.logoUrl} 
+                alt={siteConfig.brandName} 
+                style={{ maxHeight: '44px', maxWidth: '140px', objectFit: 'contain', margin: '0 auto 12px', display: 'block' }} 
+              />
+            ) : (
+              <div className="brand-badge-7" style={{ margin: '0 auto 12px' }}>{siteConfig?.brandBadge || '7'}</div>
+            )}
             <h2 style={{ fontSize: '1.6rem', fontWeight: '900', color: 'var(--color-dark)' }}>Connexion</h2>
             <p style={{ fontSize: '0.85rem', color: 'var(--color-gray-medium)', marginTop: '4px' }}>
-              Accédez à vos commandes et finalisez vos achats 7 Shop
+              Accédez à vos commandes et finalisez vos achats {siteConfig?.brandName || '7 Shop'}
             </p>
           </div>
 
