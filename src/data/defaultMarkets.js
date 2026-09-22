@@ -27,31 +27,5 @@ export const DEFAULT_MARKETS = [
       "Casquettes"
     ],
     products: []
-  },
-  {
-    id: 'alimentation-generale',
-    nom: 'Alimentation Générale',
-    slug: 'alimentation-generale',
-    icone: '🌾',
-    couleurPrimaire: '#EAB308', // 🟡 Jaune dynamique / Solaire
-    couleurPrimaireHover: '#CA8A04',
-    couleurAccent: '#0066FF',
-    couleurHeroBg: 'linear-gradient(135deg, #ffffff 0%, #fffbeb 50%, #fef3c7 100%)',
-    heroTitre: 'Le Goût & La Fraîcheur.\nVos Essentiels au Quotidien.',
-    heroSousTitre: "Épicerie de qualité, riz parfumé de premier choix, huiles végétales pures, boissons rafraîchissantes, condiments et produits du terroir sélectionnés pour nourrir et régaler toute la famille.",
-    heroImageUrl: '/images/hero-food.png',
-    heroImageAlt: 'Panier Alimentation Générale 7 Shop - Épicerie Fine & Terroir',
-    heroImageWidth: '480px',
-    heroImageHeight: '500px',
-    heroImageObjectFit: 'contain',
-    categories: [
-      "Épicerie & Riz",
-      "Huiles & Condiments",
-      "Boissons & Jus",
-      "Produits Frais & Épices",
-      "Petit Déjeuner",
-      "Snacks & Biscuits"
-    ],
-    products: []
   }
 ];

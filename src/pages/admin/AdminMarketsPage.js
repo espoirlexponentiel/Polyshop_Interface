@@ -123,7 +123,7 @@ export default function AdminMarketsPage() {
       {/* Markets Cards Grid */}
       <div className="markets-admin-grid">
         {markets.map(market => {
-          const isDefaultRoot = market.id === 'vestimentaire' || market.id === 'alimentation-generale';
+          const isDefaultRoot = market.id === 'vestimentaire';
           const isVisible = market.isActive !== false;
 
           return (
@@ -252,7 +252,7 @@ export default function AdminMarketsPage() {
                       alignItems: 'center',
                       gap: '4px'
                     }}
-                    title="Les 2 marchés par défaut (Mode & Alimentation) ne peuvent pas être supprimés"
+                    title="Le marché par défaut (Mode & Vestimentaire) ne peut pas être supprimé"
                   >
                     🔒 Protégé
                   </span>

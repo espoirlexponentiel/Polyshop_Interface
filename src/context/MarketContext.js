@@ -209,8 +209,8 @@ export function MarketProvider({ children }) {
   };
 
   const deleteMarket = async (marketId) => {
-    if (marketId === 'vestimentaire' || marketId === 'alimentation-generale') {
-      alert('🛡️ Les 2 marchés de référence (Mode & Vestimentaire et Alimentation Générale) sont protégés et ne peuvent pas être supprimés. Vous pouvez en revanche les masquer.');
+    if (marketId === 'vestimentaire') {
+      alert('🛡️ Le marché de référence (Mode & Vestimentaire) est protégé et ne peut pas être supprimé. Vous pouvez en revanche le masquer.');
       return false;
     }
     try {

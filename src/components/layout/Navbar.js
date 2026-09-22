@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useMarket } from '../../context/MarketContext';
@@ -13,6 +13,13 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [marketDropdownOpen, setMarketDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const location = useLocation();
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setMarketDropdownOpen(false);
+  }, [location.pathname]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -36,7 +43,7 @@ export default function Navbar() {
             <img 
               src={siteConfig.logoUrl} 
               alt={siteConfig.brandName || 'Logo'} 
-              style={{ maxHeight: '40px', maxWidth: '140px', objectFit: 'contain' }}
+              className="nav-brand-img"
             />
           ) : (
             <div className="brand-badge-7">{siteConfig?.brandBadge || '7'}</div>
@@ -48,13 +55,13 @@ export default function Navbar() {
 
         {/* Navigation Desktop */}
         <nav className="nav-links">
-          <Link to="/" className="nav-link-btn active">
+          <Link to="/" className={`nav-link-btn ${location.pathname === '/' ? 'active' : ''}`}>
             Boutique
           </Link>
           <a href="#catalogue" className="nav-link-btn">
             Rayons
           </a>
-          <Link to={isAuthenticated ? "/orders" : "/login"} className="nav-link-btn">
+          <Link to={isAuthenticated ? "/orders" : "/login"} className={`nav-link-btn ${location.pathname === '/orders' ? 'active' : ''}`}>
             Mes Commandes
           </Link>
 
@@ -133,45 +140,50 @@ export default function Navbar() {
 
         {/* Action Buttons */}
         <div className="nav-actions">
-          {isAuthenticated ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {/* Desktop User actions (hidden on mobile, moved inside mobile drawer) */}
+          <div className="desktop-user-actions">
+            {isAuthenticated ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Link 
+                  to={user?.role === 'ADMIN' ? "/admin" : "/orders"}
+                  style={{ 
+                    fontSize: '0.85rem', 
+                    fontWeight: '700', 
+                    color: 'var(--color-dark)',
+                    background: '#f8fafc',
+                    padding: '6px 12px',
+                    borderRadius: '8px',
+                    border: '1px solid #e2e8f0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px'
+                  }}
+                  title="Gérer mon compte"
+                >
+                  <span>👤</span>
+                  <span style={{ maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {user?.nom || user?.email || 'Mon Compte'}
+                  </span>
+                </Link>
+                <button 
+                  onClick={logout}
+                  className="nav-link-btn"
+                  style={{ padding: '6px 12px', fontSize: '0.78rem', background: '#fee2e2', color: '#dc2626', fontWeight: '700' }}
+                  title="Se déconnecter"
+                >
+                  Déconnexion
+                </button>
+              </div>
+            ) : (
               <Link 
-                to={user?.role === 'ADMIN' ? "/admin" : "/orders"}
-                style={{ 
-                  fontSize: '0.85rem', 
-                  fontWeight: '700', 
-                  color: 'var(--color-dark)',
-                  background: '#f8fafc',
-                  padding: '6px 12px',
-                  borderRadius: '8px',
-                  border: '1px solid #e2e8f0',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '5px'
-                }}
-                title="Gérer mon compte"
-              >
-                <span>👤</span>
-                <span>{user?.nom || user?.email || 'Mon Compte'}</span>
-              </Link>
-              <button 
-                onClick={logout}
+                to="/login"
                 className="nav-link-btn"
-                style={{ padding: '6px 12px', fontSize: '0.78rem', background: '#fee2e2', color: '#dc2626', fontWeight: '700' }}
-                title="Se déconnecter"
+                style={{ background: 'var(--primary-blue-light)', color: 'var(--primary-blue)', fontWeight: '800' }}
               >
-                Déconnexion
-              </button>
-            </div>
-          ) : (
-            <Link 
-              to="/login"
-              className="nav-link-btn"
-              style={{ background: 'var(--primary-blue-light)', color: 'var(--primary-blue)', fontWeight: '800' }}
-            >
-              Connexion
-            </Link>
-          )}
+                Connexion
+              </Link>
+            )}
+          </div>
 
           {/* Cart Button with Count Badge */}
           <button 
@@ -184,7 +196,7 @@ export default function Navbar() {
               <line x1="3" y1="6" x2="21" y2="6"></line>
               <path d="M16 10a4 4 0 0 1-8 0"></path>
             </svg>
-            <span>Panier</span>
+            <span className="cart-btn-label">Panier</span>
             {cartCount > 0 && (
               <span className="cart-count-badge">{cartCount}</span>
             )}
@@ -192,11 +204,11 @@ export default function Navbar() {
 
           {/* Mobile Menu Toggle Button */}
           <button 
-            className="mobile-menu-toggle" 
+            className={`mobile-menu-toggle ${mobileMenuOpen ? 'open' : ''}`}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Menu mobile"
           >
-            ☰
+            {mobileMenuOpen ? '✕' : '☰'}
           </button>
         </div>
       </div>
@@ -204,30 +216,94 @@ export default function Navbar() {
       {/* Mobile Menu Collapsible */}
       {mobileMenuOpen && (
         <div className="mobile-dropdown-menu">
-          <Link 
-            to="/" 
-            className="nav-link-btn"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            Boutique
-          </Link>
-          <a 
-            href="#catalogue" 
-            className="nav-link-btn"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            Rayons
-          </a>
-          <Link 
-            to={isAuthenticated ? "/orders" : "/login"} 
-            className="nav-link-btn"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            Mon Compte
-          </Link>
+          {/* User Account / Auth Card */}
+          {isAuthenticated ? (
+            <div className="mobile-user-card">
+              <div className="mobile-user-header">
+                <div className="mobile-user-avatar">👤</div>
+                <div className="mobile-user-details">
+                  <strong className="mobile-user-name">{user?.nom || 'Client 7 Shop'}</strong>
+                  <span className="mobile-user-email">{user?.email}</span>
+                </div>
+                {user?.role === 'ADMIN' && (
+                  <span className="mobile-admin-badge">ADMIN</span>
+                )}
+              </div>
+              <div className="mobile-user-links">
+                <Link 
+                  to="/orders" 
+                  className="mobile-sublink-btn"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <span>📦 Mes Commandes & Suivi</span>
+                  <span>›</span>
+                </Link>
+                {user?.role === 'ADMIN' && (
+                  <Link 
+                    to="/admin" 
+                    className="mobile-sublink-btn admin-highlight"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <span>🛡️ Panneau d'Administration</span>
+                    <span>›</span>
+                  </Link>
+                )}
+                <button 
+                  onClick={() => { logout(); setMobileMenuOpen(false); }}
+                  className="mobile-logout-btn"
+                >
+                  🚪 Déconnexion du compte
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="mobile-auth-card">
+              <p className="mobile-auth-prompt">
+                Connectez-vous pour passer vos commandes et suivre vos livraisons.
+              </p>
+              <Link 
+                to="/login"
+                className="mobile-login-btn"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                🔐 Se Connecter / S'inscrire
+              </Link>
+            </div>
+          )}
+
+          {/* Navigation Links */}
+          <div className="mobile-nav-links">
+            <Link 
+              to="/" 
+              className={`mobile-nav-item ${location.pathname === '/' ? 'active' : ''}`}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <span>🛍️ Boutique Complète</span>
+              <span>›</span>
+            </Link>
+            <a 
+              href="#catalogue" 
+              className="mobile-nav-item"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <span>📂 Rayons & Articles ({activeMarket?.categories?.length || 0})</span>
+              <span>›</span>
+            </a>
+            <Link 
+              to={isAuthenticated ? "/orders" : "/login"} 
+              className={`mobile-nav-item ${location.pathname === '/orders' ? 'active' : ''}`}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <span>📦 Suivi de Commande</span>
+              <span>›</span>
+            </Link>
+          </div>
           
+          {/* Market Switcher Section in Mobile Menu */}
           <div className="mobile-markets-section">
-            <div className="mobile-markets-title">🏪 Sélectionner un Marché :</div>
+            <div className="mobile-markets-title">
+              <span>🏪</span> Changer de Marché / Univers :
+            </div>
             <div className="mobile-markets-grid">
               {visibleMarkets.map((market) => {
                 const isSelected = market.id === activeMarketId;
@@ -240,11 +316,18 @@ export default function Navbar() {
                       setMobileMenuOpen(false);
                     }}
                     className={`mobile-market-btn ${isSelected ? 'active' : ''}`}
-                    style={isSelected ? { borderColor: market.couleurPrimaire, backgroundColor: `${market.couleurPrimaire}15` } : {}}
+                    style={isSelected ? { 
+                      borderColor: market.couleurPrimaire || '#0066ff', 
+                      backgroundColor: `${market.couleurPrimaire || '#0066ff'}15`,
+                      color: market.couleurPrimaire || '#0066ff'
+                    } : {}}
                   >
-                    <span>{market.icone || '🏬'}</span>
-                    <span>{market.nom}</span>
-                    {isSelected && <span className="mobile-market-active-dot">●</span>}
+                    <span className="market-btn-icon">{market.icone || '🏬'}</span>
+                    <div className="market-btn-text">
+                      <strong className="market-btn-name">{market.nom}</strong>
+                      <span className="market-btn-sub">{market.categories?.length || 0} rayons disponibles</span>
+                    </div>
+                    {isSelected && <span className="mobile-market-active-dot">✓ Actif</span>}
                   </button>
                 );
               })}

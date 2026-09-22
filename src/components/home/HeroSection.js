@@ -19,9 +19,10 @@ export default function HeroSection() {
   };
 
   const customImgStyle = {
-    ...(activeMarket?.heroImageWidth ? { width: formatDimension(activeMarket.heroImageWidth), maxWidth: '100%' } : {}),
-    ...(activeMarket?.heroImageHeight ? { height: formatDimension(activeMarket.heroImageHeight), maxHeight: 'none' } : {}),
-    ...(activeMarket?.heroImageObjectFit ? { objectFit: activeMarket.heroImageObjectFit } : {})
+    maxWidth: '100%',
+    ...(activeMarket?.heroImageWidth ? { width: formatDimension(activeMarket.heroImageWidth) } : {}),
+    ...(activeMarket?.heroImageHeight ? { height: formatDimension(activeMarket.heroImageHeight) } : {}),
+    ...(activeMarket?.heroImageObjectFit ? { objectFit: activeMarket.heroImageObjectFit } : { objectFit: 'contain' })
   };
 
   return (

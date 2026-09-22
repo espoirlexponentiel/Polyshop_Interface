@@ -44,7 +44,7 @@ export default function Footer() {
             </div>
 
             <p className="footer-desc">
-              {siteConfig?.brandName || 'PolyShop'} — Plateforme de commerce d'excellence multi-marchés. Découvrez nos univers {activeMarket?.nom || 'Mode & Alimentation'} avec des matières nobles et des produits sélectionnés pour votre quotidien.
+              {siteConfig?.brandName || 'PolyShop'} — Plateforme de commerce d'excellence multi-marchés. Découvrez notre univers {activeMarket?.nom || 'Mode & Vestimentaire'} avec des matières nobles et des produits sélectionnés pour votre quotidien.
             </p>
           </div>
 

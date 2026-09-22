@@ -290,7 +290,7 @@ export default function OrdersPage() {
               Vous n'avez pas encore passé de commande
             </h3>
             <p style={{ color: "#64748b", fontSize: "0.92rem", margin: "0 auto 24px", maxWidth: "450px", lineHeight: "1.6" }}>
-              Explorez nos rayons <strong>Mode & Vestimentaire</strong> et <strong>Alimentation Générale</strong> pour ajouter vos premiers articles au panier !
+              Explorez notre rayon <strong>Mode & Vestimentaire</strong> pour ajouter vos premiers articles au panier !
             </p>
             <Link 
               to="/" 
