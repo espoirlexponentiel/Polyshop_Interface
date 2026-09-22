@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from '../../api/axios';
+import DualPrice from '../../components/common/DualPrice';
+import { formatFCFA, formatEuro } from '../../utils/priceUtils';
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState([]);
@@ -169,12 +171,7 @@ export default function AdminOrdersPage() {
                         </span>
                       </td>
                       <td>
-                        <strong style={{ fontSize: '0.98rem', color: '#0f172a' }}>
-                          {total.toFixed(2).replace('.', ',')} €
-                        </strong>
-                        <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
-                          ~ {(total * 655.957).toLocaleString('fr-FR', { maximumFractionDigits: 0 })} FCFA
-                        </div>
+                        <DualPrice price={total} size="sm" />
                       </td>
                       <td>
                         <span className={`status-pill ${getStatusClass(order.statut || order.status)}`}>
@@ -282,12 +279,15 @@ export default function AdminOrdersPage() {
                       </div>
 
                       <div style={{ textAlign: 'right' }}>
-                        <span style={{ fontSize: '0.85rem', color: '#64748b', display: 'block' }}>
-                          {item.quantity} × {(item.unitPrice || 0).toFixed(2).replace('.', ',')} €
+                        <span style={{ fontSize: '0.78rem', color: '#64748b', display: 'block' }}>
+                          {item.quantity} × {formatFCFA(item.unitPrice || 0)}
                         </span>
-                        <strong style={{ fontSize: '0.95rem', color: '#0f172a' }}>
-                          {(item.quantity * (item.unitPrice || 0)).toFixed(2).replace('.', ',')} €
+                        <strong style={{ fontSize: '0.95rem', color: '#0f172a', display: 'block' }}>
+                          {formatFCFA(item.quantity * (item.unitPrice || 0))}
                         </strong>
+                        <span style={{ fontSize: '0.7rem', color: '#64748b' }}>
+                          ~ {formatEuro(item.quantity * (item.unitPrice || 0))}
+                        </span>
                       </div>
                     </div>
                   ))}
@@ -297,12 +297,15 @@ export default function AdminOrdersPage() {
               {/* Order Total Summary */}
               <div style={{ padding: '16px', background: '#f1f5f9', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <span style={{ fontSize: '0.82rem', color: '#64748b' }}>Frais de livraison : <strong>{(activeModalOrder.fraisPort || 0).toFixed(2).replace('.', ',')} €</strong></span>
+                  <span style={{ fontSize: '0.82rem', color: '#64748b' }}>Frais de livraison : <strong style={{ color: '#059669' }}>Gratuit</strong></span>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <span style={{ fontSize: '0.8rem', color: '#64748b', textTransform: 'uppercase', display: 'block', fontWeight: '800' }}>Total TTC Commande</span>
-                  <span style={{ fontSize: '1.4rem', fontWeight: '900', color: '#0066ff' }}>
-                    {(activeModalOrder.totalAmount || activeModalOrder.total || 0).toFixed(2).replace('.', ',')} €
+                  <span style={{ fontSize: '0.78rem', color: '#64748b', textTransform: 'uppercase', display: 'block', fontWeight: '800' }}>Total TTC Commande</span>
+                  <span style={{ fontSize: '1.4rem', fontWeight: '900', color: '#0066ff', display: 'block', lineHeight: 1.1 }}>
+                    {formatFCFA(activeModalOrder.totalAmount || activeModalOrder.total || 0)}
+                  </span>
+                  <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: '600' }}>
+                    ~ {formatEuro(activeModalOrder.totalAmount || activeModalOrder.total || 0)}
                   </span>
                 </div>
               </div>

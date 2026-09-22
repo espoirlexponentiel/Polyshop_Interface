@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useCart } from '../../context/CartContext';
+import DualPrice from '../common/DualPrice';
+import { formatFCFA } from '../../utils/priceUtils';
 
 export default function ProductModal({ product, onClose }) {
   const { addToCart } = useCart();
@@ -43,10 +45,6 @@ export default function ProductModal({ product, onClose }) {
   const handleAddToCart = () => {
     addToCart(product, selectedSize, selectedColor, quantity);
     onClose();
-  };
-
-  const calculateTotalPrice = () => {
-    return ((product.prix || 0) * quantity).toFixed(1).replace('.', ',');
   };
 
   const getDotClass = (colorName) => {
@@ -147,17 +145,12 @@ export default function ProductModal({ product, onClose }) {
           {(() => {
             const availableStock = product?.stock !== undefined && product?.stock !== null ? Number(product.stock) : 0;
             return (
-              <div className="modal-price-stock-row">
-                <div className="modal-price-box">
-                  <span className="modal-price-now">
-                    {(product.prix || 0).toFixed(1).replace('.', ',')} €
-                  </span>
-                  {product.ancienPrix && (
-                    <span className="modal-price-old">
-                      {(product.ancienPrix || 0).toFixed(1).replace('.', ',')} €
-                    </span>
-                  )}
-                </div>
+              <div className="modal-price-stock-row" style={{ alignItems: 'flex-start' }}>
+                <DualPrice 
+                  price={product.prix} 
+                  oldPrice={product.ancienPrix} 
+                  size="xl"
+                />
                 {availableStock > 5 ? (
                   <span className="stock-tag-instock">
                     ✓ En stock ({availableStock} restants)
@@ -309,7 +302,7 @@ export default function ProductModal({ product, onClose }) {
                     <>
                       <span>Ajouter au panier</span>
                       <span>•</span>
-                      <span>{calculateTotalPrice()} €</span>
+                      <span>{formatFCFA((product.prix || 0) * quantity)}</span>
                       <span>›</span>
                     </>
                   )}

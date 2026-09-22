@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useMarket } from '../../context/MarketContext';
 import axios from '../../api/axios';
+import DualPrice from '../../components/common/DualPrice';
+import { formatEuro } from '../../utils/priceUtils';
 
 export default function AdminProductsPage() {
   const { markets, allProducts, loading, addProduct, updateProduct, deleteProduct, fetchProducts } = useMarket();
@@ -49,7 +51,7 @@ export default function AdminProductsPage() {
       sousTitre: '',
       category: targetM?.categories?.[0] || 'Général',
       badge: 'NOUVEAU',
-      prix: 25.0,
+      prix: 15000,
       ancienPrix: '',
       stock: 25,
       imageUrl: '',
@@ -228,14 +230,11 @@ export default function AdminProductsPage() {
                         </span>
                       </td>
                       <td>
-                        <strong style={{ fontSize: '0.95rem', color: '#0f172a' }}>
-                          {(prod.prix || 0).toFixed(2).replace('.', ',')} €
-                        </strong>
-                        {prod.ancienPrix && (
-                          <span style={{ textDecoration: 'line-through', color: '#94a3b8', fontSize: '0.75rem', marginLeft: '6px' }}>
-                            {(prod.ancienPrix || 0).toFixed(2).replace('.', ',')} €
-                          </span>
-                        )}
+                        <DualPrice 
+                          price={prod.prix} 
+                          oldPrice={prod.ancienPrix} 
+                          size="sm"
+                        />
                       </td>
                       <td>
                         <span style={{
@@ -360,28 +359,41 @@ export default function AdminProductsPage() {
                 </div>
 
                 {/* Pricing, Badge & Stock */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '12px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.2fr 1fr 1fr', gap: '12px' }}>
                   <div className="form-group-admin">
-                    <label>Prix (€)</label>
+                    <label>Prix (FCFA)</label>
                     <input 
                       type="number"
-                      step="0.1"
+                      step="100"
+                      min="0"
                       value={formData.prix}
                       onChange={(e) => setFormData({ ...formData, prix: e.target.value })}
+                      placeholder="Ex: 15000"
                       required
                       className="admin-input"
                     />
+                    {formData.prix && !isNaN(Number(formData.prix)) && (
+                      <span style={{ fontSize: '0.72rem', color: '#0284c7', fontWeight: '700', marginTop: '3px', display: 'block' }}>
+                        ~ {formatEuro(formData.prix)}
+                      </span>
+                    )}
                   </div>
                   <div className="form-group-admin">
-                    <label>Prix Barré (€)</label>
+                    <label>Prix Barré (FCFA)</label>
                     <input 
                       type="number"
-                      step="0.1"
+                      step="100"
+                      min="0"
                       value={formData.ancienPrix}
                       onChange={(e) => setFormData({ ...formData, ancienPrix: e.target.value })}
-                      placeholder="Optionnel"
+                      placeholder="Optionnel (ex: 18000)"
                       className="admin-input"
                     />
+                    {formData.ancienPrix && !isNaN(Number(formData.ancienPrix)) && (
+                      <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600', marginTop: '3px', display: 'block' }}>
+                        ~ {formatEuro(formData.ancienPrix)}
+                      </span>
+                    )}
                   </div>
                   <div className="form-group-admin">
                     <label>Stock</label>

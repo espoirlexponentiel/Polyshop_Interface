@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../api/axios";
+import { formatFCFA, formatEuro } from "../utils/priceUtils";
 
 export default function AdminCommandesPage() {
   const [commandes, setCommandes] = useState([]);
@@ -72,7 +73,7 @@ export default function AdminCommandesPage() {
               <strong>Commande #{cmd.id}</strong> <br />
               👤 Client : {cmd.user_id} <br />
               📅 Date : {new Date(cmd.createdAt).toLocaleString()} <br />
-              💰 Total : {cmd.totalAmount} € <br />
+              💰 Total : {formatFCFA(cmd.totalAmount)} (~ {formatEuro(cmd.totalAmount)}) <br />
               🚚 Statut :
               <select
                 value={cmd.status}
@@ -90,7 +91,7 @@ export default function AdminCommandesPage() {
               <ul>
                 {cmd.items?.map((item) => (
                   <li key={item.id}>
-                    {item.product?.nom} — {item.quantity} × {item.product?.prix} €
+                    {item.product?.nom} — {item.quantity} × {formatFCFA(item.product?.prix)} (~ {formatEuro(item.product?.prix)})
                   </li>
                 ))}
               </ul>

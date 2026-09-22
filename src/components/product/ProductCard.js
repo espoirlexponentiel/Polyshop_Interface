@@ -1,5 +1,6 @@
 import React from 'react';
 import { useCart } from '../../context/CartContext';
+import DualPrice from '../common/DualPrice';
 
 export default function ProductCard({ product, onQuickView }) {
   const { addToCart } = useCart();
@@ -115,13 +116,12 @@ export default function ProductCard({ product, onQuickView }) {
       )}
 
       {/* Footer: Prices and + Ajouter */}
-      <div className="card-footer-row">
-        <div className="card-prices">
-          <span className="price-current">{(product.prix || 0).toFixed(1).replace('.', ',')} €</span>
-          {product.ancienPrix && (
-            <span className="price-strikethrough">{(product.ancienPrix || 0).toFixed(1).replace('.', ',')} €</span>
-          )}
-        </div>
+      <div className="card-footer-row" style={{ alignItems: 'flex-end' }}>
+        <DualPrice 
+          price={product.prix} 
+          oldPrice={product.ancienPrix} 
+          size="md"
+        />
 
         <button 
           onClick={handleQuickAdd}

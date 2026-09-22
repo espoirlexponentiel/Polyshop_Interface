@@ -7,6 +7,7 @@ import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import CartDrawer from '../components/layout/CartDrawer';
 import axios from '../api/axios';
+import { formatFCFA, formatEuro } from '../utils/priceUtils';
 
 export default function CartPage() {
   const { cartItems, updateQuantity, removeFromCart, clearCart, cartTotal } = useCart();
@@ -100,8 +101,6 @@ export default function CartPage() {
   };
 
   if (orderSuccess) {
-    const totalFcfa = Math.round(lastOrderInfo?.total * 655.957) || 0;
-
     return (
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#f8fafc' }}>
         <Navbar />
@@ -131,7 +130,7 @@ export default function CartPage() {
                     Règlement par Mobile Money uniquement
                   </h4>
                   <p style={{ fontSize: '0.85rem', color: '#047857', margin: '4px 0 0 0' }}>
-                    Montant à transférer : <strong>{(lastOrderInfo?.total || 0).toFixed(2).replace('.', ',')} €</strong> (~ {totalFcfa.toLocaleString('fr-FR')} FCFA)
+                    Montant à transférer : <strong>{formatFCFA(lastOrderInfo?.total || 0)}</strong> (~ {formatEuro(lastOrderInfo?.total || 0)})
                   </p>
                 </div>
               </div>
@@ -278,9 +277,14 @@ export default function CartPage() {
                           </button>
                         </div>
 
-                        <span style={{ fontSize: '1.1rem', fontWeight: '900', color: 'var(--primary-blue)' }}>
-                          {(item.prix * item.quantity).toFixed(2).replace('.', ',')} €
-                        </span>
+                        <div style={{ textAlign: 'right' }}>
+                          <span style={{ fontSize: '1.1rem', fontWeight: '900', color: 'var(--primary-blue)', display: 'block', lineHeight: 1.1 }}>
+                            {formatFCFA(item.prix * item.quantity)}
+                          </span>
+                          <span style={{ fontSize: '0.72rem', color: '#64748b', display: 'block', marginTop: '2px' }}>
+                            ~ {formatEuro(item.prix * item.quantity)}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -294,9 +298,12 @@ export default function CartPage() {
                 Récapitulatif de Commande
               </h3>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '0.9rem', color: 'var(--color-gray-dark)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', fontSize: '0.9rem', color: 'var(--color-gray-dark)' }}>
                 <span>Sous-total articles</span>
-                <span>{cartTotal.toFixed(2).replace('.', ',')} €</span>
+                <div style={{ textAlign: 'right' }}>
+                  <span style={{ fontWeight: '700', color: '#0f172a', display: 'block' }}>{formatFCFA(cartTotal)}</span>
+                  <span style={{ fontSize: '0.72rem', color: '#64748b' }}>~ {formatEuro(cartTotal)}</span>
+                </div>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px', fontSize: '0.9rem', color: 'var(--color-gray-dark)' }}>
@@ -306,12 +313,12 @@ export default function CartPage() {
 
               <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--color-gray-border)', paddingTop: '14px', marginBottom: '20px', fontSize: '1.2rem', fontWeight: '900', color: 'var(--color-dark)' }}>
                 <span>Total TTC</span>
-                <div>
-                  <span style={{ color: 'var(--primary-blue)', display: 'block', textAlign: 'right' }}>
-                    {cartTotal.toFixed(2).replace('.', ',')} €
+                <div style={{ textAlign: 'right' }}>
+                  <span style={{ color: 'var(--primary-blue)', display: 'block', fontSize: '1.35rem', fontWeight: '900', lineHeight: 1.1 }}>
+                    {formatFCFA(cartTotal)}
                   </span>
-                  <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: '700', display: 'block', textAlign: 'right' }}>
-                    ~ {Math.round(cartTotal * 655.957).toLocaleString('fr-FR')} FCFA
+                  <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: '600', display: 'block', marginTop: '2px' }}>
+                    ~ {formatEuro(cartTotal)}
                   </span>
                 </div>
               </div>
@@ -412,7 +419,7 @@ export default function CartPage() {
                     className="btn-checkout-primary"
                     style={{ width: '100%', padding: '14px', fontSize: '0.95rem' }}
                   >
-                    {loading ? 'Validation en cours...' : `Confirmer par Mobile Money • ${cartTotal.toFixed(2).replace('.', ',')} €`}
+                    {loading ? 'Validation en cours...' : `Confirmer par Mobile Money • ${formatFCFA(cartTotal)}`}
                   </button>
                 </form>
               ) : (

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "../api/axios";
+import DualPrice from "../components/common/DualPrice";
 
 export default function ProductPage() {
   const { id } = useParams(); 
@@ -42,7 +43,9 @@ export default function ProductPage() {
       <h2>{product.nom}</h2>
       <img src={product.imageUrl} alt={product.nom} style={{ maxWidth: "200px" }} />
       <p>{product.description}</p>
-      <p><strong>{product.prix} FCFA</strong></p>
+      <div style={{ margin: "16px 0" }}>
+        <DualPrice price={product.prix} oldPrice={product.ancienPrix} size="lg" />
+      </div>
       <p>Stock disponible : {product.stock}</p>
 
       <label>

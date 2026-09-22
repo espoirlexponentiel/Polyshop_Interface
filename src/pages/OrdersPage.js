@@ -4,6 +4,7 @@ import axios from "../api/axios";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import { useAuth } from "../context/AuthContext";
+import { formatFCFA, formatEuro } from "../utils/priceUtils";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
@@ -327,10 +328,10 @@ export default function OrdersPage() {
               <div style={{ background: "#ffffff", padding: "18px 20px", borderRadius: "16px", border: "1px solid #e2e8f0", boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
                 <span style={{ fontSize: "0.78rem", fontWeight: "800", color: "#64748b", textTransform: "uppercase" }}>Total Dépensé</span>
                 <div style={{ fontSize: "1.8rem", fontWeight: "900", color: "#0f172a", marginTop: "4px" }}>
-                  {stats.totalSpent.toFixed(2).replace(".", ",")} €
+                  {formatFCFA(stats.totalSpent)}
                 </div>
                 <span style={{ fontSize: "0.75rem", color: "#64748b" }}>
-                  ~ {(stats.totalSpent * 655.957).toLocaleString("fr-FR", { maximumFractionDigits: 0 })} FCFA
+                  ~ {formatEuro(stats.totalSpent)}
                 </span>
               </div>
             </div>
@@ -585,11 +586,14 @@ export default function OrdersPage() {
 
                                 <div style={{ textAlign: "right" }}>
                                   <div style={{ fontSize: "0.85rem", color: "#64748b" }}>
-                                    {pQty} × {pPrice.toFixed(2).replace(".", ",")} €
+                                    {pQty} × {formatFCFA(pPrice)}
                                   </div>
                                   <strong style={{ fontSize: "1.1rem", color: "#0066ff" }}>
-                                    {lineTotal.toFixed(2).replace(".", ",")} €
+                                    {formatFCFA(lineTotal)}
                                   </strong>
+                                  <div style={{ fontSize: "0.72rem", color: "#64748b" }}>
+                                    ~ {formatEuro(lineTotal)}
+                                  </div>
                                 </div>
                               </div>
                             );
@@ -634,10 +638,10 @@ export default function OrdersPage() {
                               Total Payé TTC
                             </span>
                             <div style={{ fontSize: "1.4rem", fontWeight: "900", color: "#0f172a" }}>
-                              {orderTotal.toFixed(2).replace(".", ",")} €
+                              {formatFCFA(orderTotal)}
                             </div>
                             <span style={{ fontSize: "0.75rem", color: "#64748b" }}>
-                              ~ {(orderTotal * 655.957).toLocaleString("fr-FR", { maximumFractionDigits: 0 })} FCFA
+                              ~ {formatEuro(orderTotal)}
                             </span>
                           </div>
 
@@ -773,10 +777,10 @@ export default function OrdersPage() {
                         {/* 4. Montant Total */}
                         <div style={{ textAlign: "right", minWidth: "120px" }}>
                           <div style={{ fontSize: "1.1rem", fontWeight: "900", color: "#0f172a" }}>
-                            {orderTotal.toFixed(2).replace(".", ",")} €
+                            {formatFCFA(orderTotal)}
                           </div>
                           <div style={{ fontSize: "0.72rem", color: "#64748b" }}>
-                            ~ {(orderTotal * 655.957).toLocaleString("fr-FR", { maximumFractionDigits: 0 })} FCFA
+                            ~ {formatEuro(orderTotal)}
                           </div>
                         </div>
 
@@ -849,7 +853,10 @@ export default function OrdersPage() {
                                     </div>
                                   </div>
                                   <div style={{ fontSize: "0.85rem", fontWeight: "800", color: "#0066ff" }}>
-                                    {pQty} × {pPrice.toFixed(2).replace(".", ",")} € = {(pQty * pPrice).toFixed(2).replace(".", ",")} €
+                                    {pQty} × {formatFCFA(pPrice)} = {formatFCFA(pQty * pPrice)}
+                                    <span style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: "600", marginLeft: "6px" }}>
+                                      (~ {formatEuro(pQty * pPrice)})
+                                    </span>
                                   </div>
                                 </div>
                               );
@@ -863,7 +870,10 @@ export default function OrdersPage() {
                               <span>📱 {order.modePaiement || "Mobile Money"}</span>
                             </div>
                             <div style={{ fontWeight: "700", color: "#0f172a" }}>
-                              Total commande : <strong style={{ color: "#0066ff" }}>{orderTotal.toFixed(2).replace(".", ",")} €</strong>
+                              Total commande : <strong style={{ color: "#0066ff" }}>{formatFCFA(orderTotal)}</strong>
+                              <span style={{ fontSize: "0.75rem", color: "#64748b", marginLeft: "4px" }}>
+                                (~ {formatEuro(orderTotal)})
+                              </span>
                             </div>
                           </div>
                         </div>
