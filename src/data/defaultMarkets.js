@@ -12,6 +12,9 @@ export const DEFAULT_MARKETS = [
     heroSousTitre: "Découvrez l'univers 7 Shop : sous-vêtements (boxers, chaussettes, débardeurs), tapettes, pull-overs, ceintures, pantalons, coupes oversize et casquettes. Des matières sélectionnées pour une tenue impeccable au quotidien.",
     heroImageUrl: '/images/hero-model.png?v=5',
     heroImageAlt: 'Modèle 7 Shop - Collection Mode Urbaine',
+    heroImageWidth: '480px',
+    heroImageHeight: '500px',
+    heroImageObjectFit: 'contain',
     categories: [
       "Boxers",
       "Chaussettes",
@@ -38,6 +41,9 @@ export const DEFAULT_MARKETS = [
     heroSousTitre: "Épicerie de qualité, riz parfumé de premier choix, huiles végétales pures, boissons rafraîchissantes, condiments et produits du terroir sélectionnés pour nourrir et régaler toute la famille.",
     heroImageUrl: '/images/hero-food.png',
     heroImageAlt: 'Panier Alimentation Générale 7 Shop - Épicerie Fine & Terroir',
+    heroImageWidth: '480px',
+    heroImageHeight: '500px',
+    heroImageObjectFit: 'contain',
     categories: [
       "Épicerie & Riz",
       "Huiles & Condiments",

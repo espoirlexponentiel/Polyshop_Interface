@@ -18,6 +18,9 @@ export default function AdminMarketsPage() {
     heroTitre: '',
     heroSousTitre: '',
     heroImageUrl: '',
+    heroImageWidth: '480px',
+    heroImageHeight: '500px',
+    heroImageObjectFit: 'contain',
     isActive: true
   });
 
@@ -33,6 +36,9 @@ export default function AdminMarketsPage() {
       heroTitre: market.heroTitre || '',
       heroSousTitre: market.heroSousTitre || '',
       heroImageUrl: market.heroImageUrl || '',
+      heroImageWidth: market.heroImageWidth || '480px',
+      heroImageHeight: market.heroImageHeight || '500px',
+      heroImageObjectFit: market.heroImageObjectFit || 'contain',
       isActive: market.isActive !== false
     });
   };
@@ -49,6 +55,9 @@ export default function AdminMarketsPage() {
       heroTitre: 'Nouveau Marché 7 Shop\nLes Meilleurs Produits',
       heroSousTitre: 'Découvrez notre nouvelle sélection d’articles de qualité supérieure.',
       heroImageUrl: '/images/hero-model.png?v=5',
+      heroImageWidth: '480px',
+      heroImageHeight: '500px',
+      heroImageObjectFit: 'contain',
       isActive: true
     });
   };
@@ -198,6 +207,13 @@ export default function AdminMarketsPage() {
                 <div className="market-detail-row">
                   <span className="market-detail-label">Produits Associés :</span>
                   <span style={{ fontWeight: '700', color: '#0f172a' }}>{market.products?.length || 0} article(s)</span>
+                </div>
+
+                <div className="market-detail-row">
+                  <span className="market-detail-label">Dimensions Visuel :</span>
+                  <span style={{ fontWeight: '700', color: '#0369a1', fontSize: '0.8rem', background: '#f0f9ff', padding: '2px 6px', borderRadius: '4px' }}>
+                    📐 {market.heroImageWidth || '480px'} × {market.heroImageHeight || '500px'} ({market.heroImageObjectFit || 'contain'})
+                  </span>
                 </div>
 
                 {/* Hero Preview Box */}
@@ -390,20 +406,200 @@ export default function AdminMarketsPage() {
                     required
                     className="admin-input"
                   />
+                </div>
 
-                  {formData.heroImageUrl && (
-                    <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <img 
-                        src={formData.heroImageUrl} 
-                        alt="Aperçu Hero" 
-                        style={{ width: '64px', height: '64px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #cbd5e1' }} 
-                        onError={(e) => { e.target.style.display = 'none'; }}
+                {/* 📐 Contrôles de Dimensions de l'Image (Largeur & Hauteur) */}
+                <div style={{
+                  padding: '16px',
+                  background: '#f8fafc',
+                  borderRadius: '10px',
+                  border: '1px solid #e2e8f0',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '14px',
+                  marginBottom: '16px'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '0.88rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      📐 Contrôle des Dimensions du Visuel
+                    </span>
+                    <span style={{ fontSize: '0.75rem', background: '#e0f2fe', color: '#0369a1', padding: '2px 8px', borderRadius: '6px', fontWeight: '700' }}>
+                      {formData.heroImageWidth || '480px'} × {formData.heroImageHeight || '500px'}
+                    </span>
+                  </div>
+
+                  {/* Largeur (Width) */}
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                      <label style={{ fontSize: '0.8rem', fontWeight: '700', color: '#334155' }}>
+                        Largeur (Width) :
+                      </label>
+                      <input 
+                        type="text"
+                        value={formData.heroImageWidth || '480px'}
+                        onChange={(e) => setFormData({ ...formData, heroImageWidth: e.target.value })}
+                        placeholder="Ex: 480px, 100%, auto"
+                        style={{
+                          width: '100px',
+                          padding: '4px 8px',
+                          fontSize: '0.8rem',
+                          borderRadius: '6px',
+                          border: '1px solid #cbd5e1',
+                          fontFamily: 'monospace',
+                          textAlign: 'center',
+                          fontWeight: '700'
+                        }}
                       />
-                      <span style={{ fontSize: '0.75rem', color: '#16a34a', fontWeight: '700' }}>
-                        ✓ Visuel prêt
+                    </div>
+                    
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <input 
+                        type="range"
+                        min="150"
+                        max="900"
+                        step="10"
+                        value={parseInt(String(formData.heroImageWidth || '480').replace(/[^0-9]/g, ''), 10) || 480}
+                        onChange={(e) => setFormData({ ...formData, heroImageWidth: `${e.target.value}px` })}
+                        style={{ flex: 1, cursor: 'pointer' }}
+                      />
+                      <span style={{ fontSize: '0.75rem', color: '#64748b', minWidth: '45px', textAlign: 'right' }}>
+                        {parseInt(String(formData.heroImageWidth || '480').replace(/[^0-9]/g, ''), 10) || 480}px
                       </span>
                     </div>
-                  )}
+
+                    {/* Presets Largeur */}
+                    <div style={{ display: 'flex', gap: '6px', marginTop: '6px', flexWrap: 'wrap' }}>
+                      {[
+                        { label: 'Compact (320px)', val: '320px' },
+                        { label: 'Moyen (420px)', val: '420px' },
+                        { label: 'Standard (480px)', val: '480px' },
+                        { label: 'Grand (600px)', val: '600px' },
+                        { label: 'Plein (100%)', val: '100%' },
+                        { label: 'Auto', val: 'auto' }
+                      ].map((preset) => (
+                        <button
+                          key={preset.val}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, heroImageWidth: preset.val })}
+                          style={{
+                            padding: '3px 8px',
+                            fontSize: '0.72rem',
+                            fontWeight: '600',
+                            borderRadius: '4px',
+                            background: formData.heroImageWidth === preset.val ? '#0066FF' : '#ffffff',
+                            color: formData.heroImageWidth === preset.val ? '#ffffff' : '#475569',
+                            border: `1px solid ${formData.heroImageWidth === preset.val ? '#0066FF' : '#cbd5e1'}`,
+                            cursor: 'pointer'
+                          }}
+                        >
+                          {preset.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Hauteur (Height) */}
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                      <label style={{ fontSize: '0.8rem', fontWeight: '700', color: '#334155' }}>
+                        Hauteur (Height) :
+                      </label>
+                      <input 
+                        type="text"
+                        value={formData.heroImageHeight || '500px'}
+                        onChange={(e) => setFormData({ ...formData, heroImageHeight: e.target.value })}
+                        placeholder="Ex: 500px, auto"
+                        style={{
+                          width: '100px',
+                          padding: '4px 8px',
+                          fontSize: '0.8rem',
+                          borderRadius: '6px',
+                          border: '1px solid #cbd5e1',
+                          fontFamily: 'monospace',
+                          textAlign: 'center',
+                          fontWeight: '700'
+                        }}
+                      />
+                    </div>
+                    
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <input 
+                        type="range"
+                        min="150"
+                        max="800"
+                        step="10"
+                        value={parseInt(String(formData.heroImageHeight || '500').replace(/[^0-9]/g, ''), 10) || 500}
+                        onChange={(e) => setFormData({ ...formData, heroImageHeight: `${e.target.value}px` })}
+                        style={{ flex: 1, cursor: 'pointer' }}
+                      />
+                      <span style={{ fontSize: '0.75rem', color: '#64748b', minWidth: '45px', textAlign: 'right' }}>
+                        {parseInt(String(formData.heroImageHeight || '500').replace(/[^0-9]/g, ''), 10) || 500}px
+                      </span>
+                    </div>
+
+                    {/* Presets Hauteur */}
+                    <div style={{ display: 'flex', gap: '6px', marginTop: '6px', flexWrap: 'wrap' }}>
+                      {[
+                        { label: 'Compact (350px)', val: '350px' },
+                        { label: 'Moyen (420px)', val: '420px' },
+                        { label: 'Standard (500px)', val: '500px' },
+                        { label: 'Grand (620px)', val: '620px' },
+                        { label: 'Auto', val: 'auto' }
+                      ].map((preset) => (
+                        <button
+                          key={preset.val}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, heroImageHeight: preset.val })}
+                          style={{
+                            padding: '3px 8px',
+                            fontSize: '0.72rem',
+                            fontWeight: '600',
+                            borderRadius: '4px',
+                            background: formData.heroImageHeight === preset.val ? '#0066FF' : '#ffffff',
+                            color: formData.heroImageHeight === preset.val ? '#ffffff' : '#475569',
+                            border: `1px solid ${formData.heroImageHeight === preset.val ? '#0066FF' : '#cbd5e1'}`,
+                            cursor: 'pointer'
+                          }}
+                        >
+                          {preset.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Mode d'Ajustement (Object-Fit) */}
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: '#334155', marginBottom: '6px' }}>
+                      Ajustement visuel (Object Fit) :
+                    </label>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      {[
+                        { val: 'contain', label: 'Contain (Sans rogner)', desc: 'Garde toute l\'image visible' },
+                        { val: 'cover', label: 'Cover (Remplir)', desc: 'Remplit tout le cadre' },
+                        { val: 'fill', label: 'Fill (Étirer)', desc: 'Force les dimensions' }
+                      ].map((fit) => (
+                        <button
+                          key={fit.val}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, heroImageObjectFit: fit.val })}
+                          style={{
+                            flex: 1,
+                            padding: '6px 8px',
+                            borderRadius: '6px',
+                            fontSize: '0.75rem',
+                            fontWeight: '700',
+                            textAlign: 'center',
+                            background: (formData.heroImageObjectFit || 'contain') === fit.val ? '#0066FF' : '#ffffff',
+                            color: (formData.heroImageObjectFit || 'contain') === fit.val ? '#ffffff' : '#334155',
+                            border: `1px solid ${(formData.heroImageObjectFit || 'contain') === fit.val ? '#0066FF' : '#cbd5e1'}`,
+                            cursor: 'pointer'
+                          }}
+                        >
+                          {fit.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
                 {/* Visibilité Publique Switch */}
@@ -429,15 +625,45 @@ export default function AdminMarketsPage() {
                   padding: '16px',
                   borderRadius: '12px',
                   background: formData.couleurHeroBg || '#f8fafc',
-                  border: `2px dashed ${formData.couleurPrimaire || '#cbd5e1'}`
+                  border: `2px dashed ${formData.couleurPrimaire || '#cbd5e1'}`,
+                  overflow: 'hidden'
                 }}>
-                  <span style={{ fontSize: '0.72rem', fontWeight: '800', color: formData.couleurPrimaire, textTransform: 'uppercase' }}>
-                    ⚡ Aperçu en direct du Hero :
-                  </span>
-                  <h4 style={{ fontSize: '1.1rem', fontWeight: '900', color: '#0f172a', margin: '6px 0' }}>
-                    {formData.heroTitre?.split('\n')[0]} <span style={{ color: formData.couleurPrimaire }}>{formData.heroTitre?.split('\n')[1]}</span>
-                  </h4>
-                  <p style={{ fontSize: '0.78rem', color: '#64748b' }}>{formData.heroSousTitre}</p>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '0.72rem', fontWeight: '800', color: formData.couleurPrimaire, textTransform: 'uppercase' }}>
+                      ⚡ Aperçu en direct du Hero :
+                    </span>
+                    <span style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                      Largeur: {formData.heroImageWidth || '480px'} | Hauteur: {formData.heroImageHeight || '500px'}
+                    </span>
+                  </div>
+                  
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
+                    <div style={{ flex: 1, minWidth: '180px' }}>
+                      <h4 style={{ fontSize: '1.05rem', fontWeight: '900', color: '#0f172a', margin: '4px 0' }}>
+                        {formData.heroTitre?.split('\n')[0]} <span style={{ color: formData.couleurPrimaire }}>{formData.heroTitre?.split('\n')[1]}</span>
+                      </h4>
+                      <p style={{ fontSize: '0.75rem', color: '#64748b', lineHeight: 1.4 }}>{formData.heroSousTitre}</p>
+                    </div>
+
+                    {formData.heroImageUrl && (
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', maxWidth: '100%' }}>
+                        <img 
+                          src={formData.heroImageUrl} 
+                          alt="Aperçu Hero" 
+                          style={{ 
+                            width: formData.heroImageWidth ? (formData.heroImageWidth.includes('%') || formData.heroImageWidth.includes('px') ? formData.heroImageWidth : `${formData.heroImageWidth}px`) : '180px',
+                            height: formData.heroImageHeight ? (formData.heroImageHeight.includes('%') || formData.heroImageHeight.includes('px') ? formData.heroImageHeight : `${formData.heroImageHeight}px`) : '160px',
+                            maxWidth: '100%',
+                            maxHeight: '220px',
+                            objectFit: formData.heroImageObjectFit || 'contain',
+                            borderRadius: '8px',
+                            filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.12))'
+                          }} 
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 

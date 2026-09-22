@@ -7,6 +7,23 @@ export default function HeroSection() {
   // Split title lines
   const titleLines = activeMarket?.heroTitre ? activeMarket.heroTitre.split('\n') : ['Le style pur.', 'Blanc, Bleu & Jaune.'];
 
+  // Formateur robuste de dimension (supporte nombre brut 450, ou chaîne '450px', '100%', 'auto')
+  const formatDimension = (val) => {
+    if (!val && val !== 0) return undefined;
+    const str = String(val).trim();
+    if (!str) return undefined;
+    if (str === 'auto' || str.endsWith('px') || str.endsWith('%') || str.endsWith('rem') || str.endsWith('vh') || str.endsWith('vw')) {
+      return str;
+    }
+    return `${str}px`;
+  };
+
+  const customImgStyle = {
+    ...(activeMarket?.heroImageWidth ? { width: formatDimension(activeMarket.heroImageWidth), maxWidth: '100%' } : {}),
+    ...(activeMarket?.heroImageHeight ? { height: formatDimension(activeMarket.heroImageHeight), maxHeight: 'none' } : {}),
+    ...(activeMarket?.heroImageObjectFit ? { objectFit: activeMarket.heroImageObjectFit } : {})
+  };
+
   return (
     <section className="hero-wrapper">
       <div 
@@ -43,6 +60,7 @@ export default function HeroSection() {
             src={activeMarket?.heroImageUrl || "/images/hero-model.png?v=5"} 
             alt={activeMarket?.heroImageAlt || activeMarket?.nom || "7 Shop"} 
             className="hero-model-seamless-img"
+            style={customImgStyle}
           />
         </div>
       </div>
