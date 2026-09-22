@@ -1,5 +1,12 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
+// ========================================================
+// URL du Backend pour l'authentification Google (Local vs Render)
+// Décommentez celle que vous souhaitez utiliser :
+// ========================================================
+// const BACKEND_URL = "http://localhost:8080"; // 💻 Mode LOCAL
+const BACKEND_URL = "https://backend-ecommerce-54fk.onrender.com"; // 🚀 Mode RENDER (remplacez par votre vrai lien Render)
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -50,7 +57,7 @@ export const AuthProvider = ({ children }) => {
 
   const loginWithGoogle = useCallback(() => {
     // Redirection vers l'endpoint OAuth2 Google du backend Spring Boot
-    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+    window.location.href = `${BACKEND_URL}/oauth2/authorization/google`;
   }, []);
 
   return (

@@ -1,7 +1,14 @@
 import axios from "axios";
 
+// ========================================================
+// Configuration de l'URL de l'API (Local vs Render)
+// Décommentez celle que vous souhaitez utiliser :
+// ========================================================
+// const API_URL = "http://localhost:8080/api"; // 💻 Mode LOCAL
+const API_URL = "https://backend-ecommerce-54fk.onrender.com/api"; // 🚀 Mode RENDER (remplacez par votre vrai lien Render)
+
 const instance = axios.create({
-  baseURL: "http://localhost:8080/api",
+  baseURL: API_URL,
 });
 
 instance.interceptors.request.use((config) => {
