@@ -10,14 +10,14 @@ export const SiteConfigProvider = ({ children }) => {
       return saved ? JSON.parse(saved) : {
         brandName: 'PolyShop',
         brandBadge: 'P',
-        logoUrl: '',
+        logoUrl: '/poly.jpg',
         tagline: 'Boutique Officielle'
       };
     } catch {
       return {
         brandName: 'PolyShop',
         brandBadge: 'P',
-        logoUrl: '',
+        logoUrl: '/poly.jpg',
         tagline: 'Boutique Officielle'
       };
     }
@@ -31,7 +31,7 @@ export const SiteConfigProvider = ({ children }) => {
         const configData = {
           brandName: res.data.brandName || 'PolyShop',
           brandBadge: res.data.brandBadge || 'P',
-          logoUrl: res.data.logoUrl || '',
+          logoUrl: res.data.logoUrl || '/poly.jpg',
           tagline: res.data.tagline || 'Boutique Officielle'
         };
         setSiteConfig(configData);
