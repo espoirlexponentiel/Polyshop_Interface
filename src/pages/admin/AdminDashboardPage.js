@@ -5,14 +5,12 @@ import axios from '../../api/axios';
 import { formatFCFA } from '../../utils/priceUtils';
 
 export default function AdminDashboardPage() {
-  const { markets, dbMarkets, allProducts, loading: loadingMarkets } = useMarket();
+  const { markets, dbMarkets, allProducts } = useMarket();
   const [orders, setOrders] = useState([]);
-  const [loadingOrders, setLoadingOrders] = useState(true);
 
   // 📡 Récupérer les vraies commandes depuis la BDD (API Spring Boot)
   useEffect(() => {
     const fetchAdminOrders = async () => {
-      setLoadingOrders(true);
       try {
         const res = await axios.get('/orders/admin');
         const realOrders = Array.isArray(res.data) ? res.data : [];
@@ -20,8 +18,6 @@ export default function AdminDashboardPage() {
       } catch (err) {
         console.error('Erreur chargement commandes BDD:', err);
         setOrders([]);
-      } finally {
-        setLoadingOrders(false);
       }
     };
 
@@ -91,7 +87,7 @@ export default function AdminDashboardPage() {
             <Link to="/admin/marches" className="btn-admin-edit">Gérer les Marchés</Link>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className="admin-markets-scroll-track">
             {markets.length === 0 ? (
               <p style={{ color: '#64748b', fontSize: '0.88rem' }}>Aucun marché disponible pour le moment.</p>
             ) : (
@@ -103,32 +99,30 @@ export default function AdminDashboardPage() {
                 return (
                   <div 
                     key={m.id}
+                    className="admin-market-stat-item"
                     style={{
-                      padding: '16px',
-                      borderRadius: '12px',
-                      background: '#f8fafc',
-                      border: '1px solid #e2e8f0',
                       borderLeft: `5px solid ${m.couleurPrimaire || '#0066ff'}`
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '1.3rem' }}>{m.icone || '🏬'}</span>
-                        <strong style={{ fontSize: '1rem', color: '#0f172a' }}>{m.nom}</strong>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px', gap: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+                        <span style={{ fontSize: '1.25rem', flexShrink: 0 }}>{m.icone || '🏬'}</span>
+                        <strong style={{ fontSize: '0.95rem', color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.nom}</strong>
                       </div>
                       <span style={{
-                        padding: '3px 10px',
-                        background: `${m.couleurPrimaire}22`,
-                        color: m.couleurPrimaire,
+                        padding: '2px 8px',
+                        background: `${m.couleurPrimaire || '#0066ff'}18`,
+                        color: m.couleurPrimaire || '#0066ff',
                         fontWeight: '800',
                         borderRadius: '9999px',
-                        fontSize: '0.75rem'
+                        fontSize: '0.72rem',
+                        flexShrink: 0
                       }}>
-                        {m.couleurPrimaire}
+                        {m.couleurPrimaire || '#0066ff'}
                       </span>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '20px', fontSize: '0.82rem', color: '#64748b' }}>
+                    <div style={{ display: 'flex', gap: '14px', fontSize: '0.80rem', color: '#64748b', flexWrap: 'wrap' }}>
                       <span>📦 <strong>{productCount}</strong> produit{productCount > 1 ? 's' : ''}</span>
                       <span>📂 <strong>{categoryCount}</strong> rayon{categoryCount > 1 ? 's' : ''}</span>
                     </div>
@@ -145,34 +139,41 @@ export default function AdminDashboardPage() {
             <h3><span>⚡</span> Actions Rapides</h3>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
-            <Link to="/admin/parametres" className="btn-admin-primary" style={{ textAlign: 'center', textDecoration: 'none', background: 'linear-gradient(135deg, #ffb800 0%, #d97706 100%)', color: '#111827', fontWeight: '800' }}>
-              🎨 Personnaliser le Logo & le Nom de Marque
+          <div className="admin-quick-actions-grid">
+            <Link to="/admin/parametres" className="btn-admin-primary admin-quick-action-btn btn-brand-highlight">
+              <span>🎨</span>
+              <span>Logo & Marque</span>
             </Link>
-            <Link to="/admin/marches" className="btn-admin-secondary" style={{ textAlign: 'center', textDecoration: 'none' }}>
-              + Créer ou Configurer un Marché
+            <Link to="/admin/marches" className="btn-admin-secondary admin-quick-action-btn">
+              <span>🏬</span>
+              <span>Marchés & Thèmes</span>
             </Link>
-            <Link to="/admin/categories" className="btn-admin-secondary" style={{ textAlign: 'center', textDecoration: 'none' }}>
-              📂 Gérer les Catégories / Rayons
+            <Link to="/admin/categories" className="btn-admin-secondary admin-quick-action-btn">
+              <span>📂</span>
+              <span>Rayons / Catégories</span>
             </Link>
-            <Link to="/admin/produits" className="btn-admin-secondary" style={{ textAlign: 'center', textDecoration: 'none' }}>
-              + Ajouter un Nouveau Produit
+            <Link to="/admin/produits" className="btn-admin-secondary admin-quick-action-btn">
+              <span>📦</span>
+              <span>+ Nouveau Produit</span>
             </Link>
-            <Link to="/admin/commandes" className="btn-admin-secondary" style={{ textAlign: 'center', textDecoration: 'none' }}>
-              📋 Consulter les Commandes Réelles ({totalOrders})
+            <Link to="/admin/commandes" className="btn-admin-secondary admin-quick-action-btn full-width-mobile">
+              <span>📋</span>
+              <span>Commandes ({totalOrders})</span>
             </Link>
           </div>
 
-          <div className="admin-card-header" style={{ marginTop: '20px' }}>
+          <div className="admin-card-header" style={{ marginTop: '24px' }}>
             <h3><span>⚠️</span> Alertes Stock Faible (≤ 10)</h3>
           </div>
 
           {lowStockProducts.length > 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div className="admin-low-stock-list">
               {lowStockProducts.slice(0, 5).map(p => (
-                <div key={p.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: '#fffbeb', borderRadius: '8px', border: '1px solid #fef3c7' }}>
-                  <span style={{ fontSize: '0.82rem', fontWeight: '700', color: '#92400e' }}>{p.nom}</span>
-                  <span style={{ fontSize: '0.78rem', fontWeight: '800', color: '#b45309', background: '#fde68a', padding: '2px 8px', borderRadius: '4px' }}>
+                <div key={p.id} className="admin-low-stock-item">
+                  <span style={{ fontSize: '0.82rem', fontWeight: '700', color: '#92400e', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {p.nom}
+                  </span>
+                  <span style={{ fontSize: '0.76rem', fontWeight: '800', color: '#b45309', background: '#fde68a', padding: '2px 8px', borderRadius: '4px', flexShrink: 0 }}>
                     Stock : {p.stock}
                   </span>
                 </div>

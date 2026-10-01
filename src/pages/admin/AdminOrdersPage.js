@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from '../../api/axios';
-import DualPrice from '../../components/common/DualPrice';
 import { formatFCFA } from '../../utils/priceUtils';
 
 export default function AdminOrdersPage() {
@@ -86,11 +85,11 @@ export default function AdminOrdersPage() {
           <p style={{ fontSize: '0.85rem', color: '#64748b' }}>Suivez et gérez en temps réel les commandes passées par vos clients sur votre boutique 7 Shop.</p>
         </div>
 
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+        <div className="admin-filter-tabs-scroll">
           <button 
             onClick={fetchOrders} 
             className="btn-admin-secondary"
-            style={{ padding: '6px 12px', fontSize: '0.82rem' }}
+            style={{ padding: '6px 12px', fontSize: '0.82rem', flexShrink: 0, whiteSpace: 'nowrap' }}
             title="Actualiser la liste"
           >
             🔄 Rafraîchir
@@ -106,7 +105,9 @@ export default function AdminOrdersPage() {
                 fontSize: '0.82rem',
                 background: selectedStatus === st ? '#0f172a' : '#ffffff',
                 color: selectedStatus === st ? '#ffffff' : '#475569',
-                borderColor: selectedStatus === st ? '#0f172a' : '#cbd5e1'
+                borderColor: selectedStatus === st ? '#0f172a' : '#cbd5e1',
+                flexShrink: 0,
+                whiteSpace: 'nowrap'
               }}
             >
               {st === 'all' ? 'Toutes' : formatDisplayStatus(st)}
@@ -171,7 +172,7 @@ export default function AdminOrdersPage() {
                         </span>
                       </td>
                       <td>
-                        <DualPrice price={total} size="sm" />
+                        <strong style={{ fontSize: '0.95rem', color: '#0f172a' }}>{formatFCFA(total)}</strong>
                       </td>
                       <td>
                         <span className={`status-pill ${getStatusClass(order.statut || order.status)}`}>
@@ -242,7 +243,7 @@ export default function AdminOrdersPage() {
               </div>
 
               {/* Customer Info Grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', background: '#ffffff', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+              <div className="admin-customer-info-grid">
                 <div>
                   <h5 style={{ fontSize: '0.82rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', marginBottom: '8px' }}>👤 Informations Client</h5>
                   <p style={{ fontSize: '0.9rem', fontWeight: '700', color: '#0f172a' }}>{activeModalOrder.client?.nom || activeModalOrder.userNom || 'Client'}</p>

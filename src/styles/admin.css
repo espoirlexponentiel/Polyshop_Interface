@@ -715,34 +715,435 @@
   color: #dc2626;
 }
 
-/* Responsive Admin */
+/* ---------- 8. MOBILE DRAWER NAVIGATION & DASHBOARD TRACKS ---------- */
+
+/* Hamburger Button (Mobile only) */
+.btn-admin-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 36px;
+  height: 36px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px 7px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-admin-hamburger:hover {
+  background: #e2e8f0;
+}
+
+.hamburger-bar {
+  width: 100%;
+  height: 2.5px;
+  background: #0f172a;
+  border-radius: 2px;
+  transition: all 0.25s ease;
+}
+
+/* Off-canvas Drawer Overlay */
+.admin-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 9998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.admin-drawer-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Off-canvas Drawer Panel */
+.admin-drawer-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 290px;
+  max-width: 85vw;
+  background: #0f172a;
+  color: #f8fafc;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.4);
+}
+
+.admin-drawer-panel.open {
+  transform: translateX(0);
+}
+
+.admin-drawer-header {
+  padding: 20px 16px;
+  border-bottom: 1px solid #1e293b;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-admin-drawer-close {
+  width: 34px;
+  height: 34px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.btn-admin-drawer-close:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+}
+
+.admin-drawer-nav {
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.admin-drawer-footer {
+  padding: 16px 12px;
+  border-top: 1px solid #1e293b;
+  background: #090d16;
+}
+
+/* Dashboard Markets Horizontal Track */
+.admin-markets-scroll-track {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-market-stat-item {
+  padding: 14px 16px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.admin-market-stat-item:hover {
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+/* Dashboard Quick Actions Grid */
+.admin-quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.admin-quick-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.admin-quick-action-btn.btn-brand-highlight {
+  background: linear-gradient(135deg, #0066ff 0%, #004ecc 100%);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 102, 255, 0.25);
+}
+
+.admin-quick-action-btn.full-width-mobile {
+  grid-column: span 2;
+}
+
+/* Low Stock Alert Items */
+.admin-low-stock-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-low-stock-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #fffbeb;
+  border: 1px solid #fef3c7;
+  border-radius: 10px;
+  gap: 8px;
+}
+
+/* Action & Filter Bars */
+.admin-actions-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.admin-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.admin-filter-tabs-scroll {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+
+.admin-filter-tabs-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Categories Grid */
+.admin-categories-grid {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 24px;
+}
+
+/* Customer Info Grid in Modal */
+.admin-customer-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+/* ============================================================
+   RESPONSIVE ADMIN STYLES (Smartphone & Tablet vs Desktop Web)
+   ============================================================ */
+
+/* Medium Screens & Tablets (<= 1024px) */
 @media (max-width: 1024px) {
-  .admin-layout-root {
-    flex-direction: column;
+  /* Masquer le sidebar statique desktop sur smartphone/tablette */
+  .admin-desktop-sidebar {
+    display: none !important;
   }
-  .admin-sidebar {
-    width: 100%;
-    height: auto;
-    position: static;
+
+  /* Afficher le bouton hamburger */
+  .btn-admin-hamburger {
+    display: flex !important;
   }
-  .admin-nav-menu {
-    flex-direction: row;
-    overflow-x: auto;
-    padding: 10px;
+
+  .admin-topbar {
+    padding: 14px 20px;
   }
+
+  .admin-body-container {
+    padding: 20px 16px;
+  }
+
   .stats-grid-row {
     grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
   }
+
   .dashboard-sections-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .admin-categories-grid {
     grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 640px) {
-  .stats-grid-row {
-    grid-template-columns: 1fr;
+/* Smartphones (<= 768px) - Clean, aesthetic, uncluttered app-like layout */
+@media (max-width: 768px) {
+  /* Topbar Mobile Uncluttered */
+  .admin-topbar {
+    padding: 12px 14px;
+    gap: 12px;
   }
+
+  .admin-page-title-wrap h1 {
+    font-size: 1.15rem;
+    line-height: 1.2;
+  }
+
+  .admin-page-title-wrap p {
+    display: none; /* Supprime le texte verbeux pour aérer le smartphone */
+  }
+
+  .admin-topbar-actions {
+    display: none; /* Déplacé proprement dans le drawer mobile */
+  }
+
   .admin-body-container {
-    padding: 16px;
+    padding: 12px;
+  }
+
+  /* 4 KPI Cards: Côte à côte (2x2 grid) sur smartphone */
+  .stats-grid-row {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .kpi-card {
+    padding: 12px 12px !important;
+    border-radius: 12px !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+    position: relative;
+  }
+
+  .kpi-label {
+    font-size: 0.66rem !important;
+    margin-bottom: 2px !important;
+  }
+
+  .kpi-value {
+    font-size: 1.15rem !important;
+    font-weight: 900 !important;
+    word-break: break-word;
+  }
+
+  .kpi-subtext {
+    font-size: 0.68rem !important;
+    margin-top: 2px !important;
+  }
+
+  .kpi-icon-box {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 1rem !important;
+    border-radius: 8px !important;
+  }
+
+  /* Scroll horizontal fluide des cartes marchés sur smartphone */
+  .admin-markets-scroll-track {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory;
+    gap: 10px !important;
+    padding-bottom: 8px !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-market-stat-item {
+    flex: 0 0 250px !important;
+    min-width: 240px !important;
+    scroll-snap-align: start;
+    padding: 12px !important;
+  }
+
+  /* Quick Actions 2 Colonnes sur Smartphone */
+  .admin-quick-actions-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .admin-quick-action-btn {
+    padding: 10px 8px !important;
+    font-size: 0.78rem !important;
+  }
+
+  /* Panels & Cards */
+  .admin-card-panel {
+    padding: 14px !important;
+    border-radius: 14px !important;
+    margin-bottom: 16px;
+  }
+
+  .admin-card-header {
+    margin-bottom: 14px !important;
+    padding-bottom: 10px !important;
+  }
+
+  .admin-card-header h3 {
+    font-size: 0.98rem !important;
+  }
+
+  /* Form & Actions bars */
+  .admin-actions-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .admin-filter-group {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .admin-input, .admin-select {
+    width: 100% !important;
+  }
+
+  /* Customer Info Grid in Modal */
+  .admin-customer-info-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* Modal on Smartphone */
+  .admin-modal-overlay {
+    padding: 10px;
+  }
+
+  .admin-modal-box {
+    border-radius: 16px;
+    max-height: 94vh;
+  }
+
+  .admin-modal-header {
+    padding: 14px 16px;
+  }
+
+  .admin-modal-body {
+    padding: 14px 16px;
+    gap: 14px;
+  }
+
+  /* Markets Admin Cards Grid */
+  .markets-admin-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
   }
 }
+

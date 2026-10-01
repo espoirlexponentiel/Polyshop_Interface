@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useMarket } from '../../context/MarketContext';
 import axios from '../../api/axios';
-import DualPrice from '../../components/common/DualPrice';
+import { formatFCFA } from '../../utils/priceUtils';
 
 export default function AdminProductsPage() {
   const { markets, allProducts, loading, addProduct, updateProduct, deleteProduct, fetchProducts } = useMarket();
@@ -137,16 +137,16 @@ export default function AdminProductsPage() {
   return (
     <div className="admin-products-root">
       {/* Top Filter Bar */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+      <div className="admin-actions-bar">
+        <div className="admin-filter-group">
           {/* Search Box */}
           <input 
             type="text"
-            placeholder="🔍 Rechercher un article en base..."
+            placeholder="🔍 Rechercher un article..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="admin-input"
-            style={{ width: '260px' }}
+            style={{ minWidth: '180px', flex: 1 }}
           />
 
           {/* Market Filter */}
@@ -154,6 +154,7 @@ export default function AdminProductsPage() {
             value={selectedMarketId}
             onChange={(e) => setSelectedMarketId(e.target.value)}
             className="admin-select"
+            style={{ minWidth: '160px' }}
           >
             <option value="all">🌐 Tous les Marchés ({markets.length})</option>
             {markets.map(m => (
@@ -161,12 +162,12 @@ export default function AdminProductsPage() {
             ))}
           </select>
 
-          <button onClick={fetchProducts} className="btn-admin-secondary" title="Rafraîchir depuis la base">
-            🔄 Actualiser BDD
+          <button onClick={fetchProducts} className="btn-admin-secondary" title="Rafraîchir depuis la base" style={{ flexShrink: 0 }}>
+            🔄 Actualiser
           </button>
         </div>
 
-        <button onClick={handleOpenCreate} className="btn-admin-primary">
+        <button onClick={handleOpenCreate} className="btn-admin-primary" style={{ flexShrink: 0 }}>
           + Nouveau Produit
         </button>
       </div>
@@ -229,11 +230,16 @@ export default function AdminProductsPage() {
                         </span>
                       </td>
                       <td>
-                        <DualPrice 
-                          price={prod.prix} 
-                          oldPrice={prod.ancienPrix} 
-                          size="sm"
-                        />
+                        <div>
+                          <strong style={{ fontSize: '0.95rem', color: '#0f172a', display: 'block' }}>
+                            {formatFCFA(prod.prix)}
+                          </strong>
+                          {prod.ancienPrix && (
+                            <span style={{ fontSize: '0.75rem', color: '#94a3b8', textDecoration: 'line-through', display: 'block' }}>
+                              {formatFCFA(prod.ancienPrix)}
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td>
                         <span style={{

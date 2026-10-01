@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, Link, Outlet, useLocation, Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useSiteConfig } from '../../context/SiteConfigContext';
@@ -8,6 +8,12 @@ export default function AdminLayout({ children }) {
   const { user, isAuthenticated, logout } = useAuth();
   const { siteConfig } = useSiteConfig();
   const location = useLocation();
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  // Fermer automatiquement le Drawer mobile lors d'un changement de page
+  useEffect(() => {
+    setIsDrawerOpen(false);
+  }, [location.pathname]);
 
   // 🔒 Protection stricte : Connexion obligatoire avec rôle ADMIN
   if (!isAuthenticated || !user || user.role !== 'ADMIN') {
@@ -35,8 +41,10 @@ export default function AdminLayout({ children }) {
 
   return (
     <div className="admin-layout-root">
-      {/* 1. Sidebar Navigation */}
-      <aside className="admin-sidebar">
+      {/* ============================================================
+          1. DESKTOP SIDEBAR (Visible sur grand écran uniquement)
+          ============================================================ */}
+      <aside className="admin-sidebar admin-desktop-sidebar">
         <div className="admin-sidebar-header">
           {siteConfig?.logoUrl ? (
             <img 
@@ -131,9 +139,144 @@ export default function AdminLayout({ children }) {
         </div>
       </aside>
 
-      {/* 2. Main Content View */}
+      {/* ============================================================
+          2. MOBILE DRAWER NAVIGATION (Remplacement fluide du sidebar)
+          ============================================================ */}
+      <div 
+        className={`admin-drawer-overlay ${isDrawerOpen ? 'open' : ''}`}
+        onClick={() => setIsDrawerOpen(false)}
+      >
+        <aside 
+          className={`admin-drawer-panel ${isDrawerOpen ? 'open' : ''}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="admin-drawer-header">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              {siteConfig?.logoUrl ? (
+                <img 
+                  src={siteConfig.logoUrl} 
+                  alt={siteConfig.brandName || 'Logo'} 
+                  style={{ maxHeight: '34px', maxWidth: '38px', objectFit: 'contain', borderRadius: '6px' }} 
+                />
+              ) : (
+                <div className="admin-brand-badge">{siteConfig?.brandBadge || '7'}</div>
+              )}
+              <div>
+                <div className="admin-brand-title">{siteConfig?.brandName || '7 SHOP'}</div>
+                <div className="admin-brand-sub">PANEL ADMIN</div>
+              </div>
+            </div>
+
+            <button 
+              className="btn-admin-drawer-close"
+              onClick={() => setIsDrawerOpen(false)}
+              aria-label="Fermer le menu"
+            >
+              ✕
+            </button>
+          </div>
+
+          <nav className="admin-drawer-nav">
+            <NavLink 
+              to="/admin" 
+              end 
+              className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}
+              onClick={() => setIsDrawerOpen(false)}
+            >
+              <span className="admin-nav-icon">📊</span>
+              <span>Dashboard & Stats</span>
+            </NavLink>
+
+            <NavLink 
+              to="/admin/parametres" 
+              className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}
+              onClick={() => setIsDrawerOpen(false)}
+            >
+              <span className="admin-nav-icon">🎨</span>
+              <span>Logo & Identité</span>
+            </NavLink>
+
+            <NavLink 
+              to="/admin/marches" 
+              className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}
+              onClick={() => setIsDrawerOpen(false)}
+            >
+              <span className="admin-nav-icon">🏬</span>
+              <span>Marchés & Thèmes</span>
+            </NavLink>
+
+            <NavLink 
+              to="/admin/categories" 
+              className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}
+              onClick={() => setIsDrawerOpen(false)}
+            >
+              <span className="admin-nav-icon">📂</span>
+              <span>Catégories</span>
+            </NavLink>
+
+            <NavLink 
+              to="/admin/produits" 
+              className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}
+              onClick={() => setIsDrawerOpen(false)}
+            >
+              <span className="admin-nav-icon">📦</span>
+              <span>Produits & Stocks</span>
+            </NavLink>
+
+            <NavLink 
+              to="/admin/commandes" 
+              className={({ isActive }) => `admin-nav-item ${isActive ? 'active' : ''}`}
+              onClick={() => setIsDrawerOpen(false)}
+            >
+              <span className="admin-nav-icon">📋</span>
+              <span>Commandes Clients</span>
+            </NavLink>
+          </nav>
+
+          <div className="admin-drawer-footer">
+            <div style={{ padding: '10px 12px', background: 'rgba(255,255,255,0.06)', borderRadius: '10px', marginBottom: '12px', fontSize: '0.80rem' }}>
+              <div style={{ color: '#94a3b8', fontSize: '0.70rem' }}>Administrateur connecté :</div>
+              <div style={{ color: '#ffffff', fontWeight: '800', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {user.nom || user.email}
+              </div>
+              <div style={{ color: '#38bdf8', fontSize: '0.72rem', fontWeight: '800', marginTop: '2px' }}>
+                🛡️ RÔLE ADMINISTRATEUR
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <Link to="/" className="btn-back-to-shop" style={{ flex: 1, padding: '10px 12px', fontSize: '0.82rem' }}>
+                <span>🛍️ Boutique</span>
+              </Link>
+              <button 
+                onClick={logout} 
+                className="btn-admin-danger"
+                style={{ padding: '8px 14px', fontSize: '0.85rem', borderRadius: '8px', border: 'none', cursor: 'pointer' }}
+                title="Se déconnecter"
+              >
+                🚪
+              </button>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      {/* ============================================================
+          3. MAIN CONTENT VIEW
+          ============================================================ */}
       <main className="admin-main-content">
         <header className="admin-topbar">
+          {/* Mobile Hamburger Button */}
+          <button 
+            className="btn-admin-hamburger"
+            onClick={() => setIsDrawerOpen(true)}
+            aria-label="Ouvrir le menu admin"
+          >
+            <span className="hamburger-bar"></span>
+            <span className="hamburger-bar"></span>
+            <span className="hamburger-bar"></span>
+          </button>
+
           <div className="admin-page-title-wrap">
             <h1>{meta.title}</h1>
             <p>{meta.sub}</p>

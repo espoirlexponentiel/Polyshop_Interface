@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useMarket } from '../../context/MarketContext';
 
 export default function AdminCategoriesPage() {
-  const { markets, addCategory, updateCategory, deleteCategory, loading } = useMarket();
+  const { markets, addCategory, updateCategory, deleteCategory } = useMarket();
   const [selectedMarketId, setSelectedMarketId] = useState(markets[0]?.id || 'vestimentaire');
   const [newCatName, setNewCatName] = useState('');
   const [newCatDesc, setNewCatDesc] = useState('');
@@ -64,7 +64,7 @@ export default function AdminCategoriesPage() {
         </div>
 
         {/* Market Selector Pill Tabs */}
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div className="admin-filter-tabs-scroll">
           {markets.map(m => (
             <button
               key={m.id}
@@ -80,7 +80,9 @@ export default function AdminCategoriesPage() {
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px'
+                gap: '6px',
+                whiteSpace: 'nowrap',
+                flexShrink: 0
               }}
             >
               <span>{m.icone || '🏬'}</span>
@@ -91,7 +93,7 @@ export default function AdminCategoriesPage() {
       </div>
 
       {/* Main Grid: Add Category + Category List */}
-      <div style={{ display: 'grid', gridTemplateColumns: '360px 1fr', gap: '24px' }}>
+      <div className="admin-categories-grid">
         
         {/* Left: Add New Category Form */}
         <div className="admin-card-panel">
