@@ -121,6 +121,11 @@ export default function AdminMarketsPage() {
       </div>
 
       {/* Markets Cards Grid */}
+      {markets.length > 1 && (
+        <div className="admin-mobile-scroll-hint">
+          <span>👉 Glissez horizontalement pour faire défiler les {markets.length} marchés</span>
+        </div>
+      )}
       <div className="markets-admin-grid">
         {markets.map(market => {
           const isDefaultRoot = market.id === 'vestimentaire';

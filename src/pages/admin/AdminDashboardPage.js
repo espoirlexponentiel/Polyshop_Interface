@@ -87,6 +87,12 @@ export default function AdminDashboardPage() {
             <Link to="/admin/marches" className="btn-admin-edit">Gérer les Marchés</Link>
           </div>
 
+          {markets.length > 1 && (
+            <div className="admin-mobile-scroll-hint" style={{ margin: '8px 12px 0 12px' }}>
+              <span>👉 Glissez horizontalement pour voir tous les marchés</span>
+            </div>
+          )}
+
           <div className="admin-markets-scroll-track">
             {markets.length === 0 ? (
               <p style={{ color: '#64748b', fontSize: '0.88rem' }}>Aucun marché disponible pour le moment.</p>
