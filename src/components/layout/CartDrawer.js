@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
-import { formatFCFA, formatEuro } from '../../utils/priceUtils';
+import { formatFCFA } from '../../utils/priceUtils';
 
 export default function CartDrawer() {
   const { cartItems, isDrawerOpen, closeDrawer, updateQuantity, removeFromCart, cartTotal, cartCount } = useCart();
@@ -81,9 +81,6 @@ export default function CartDrawer() {
                       <span style={{ fontWeight: '800', color: 'var(--primary-blue)', fontSize: '0.95rem', display: 'block', lineHeight: 1.1 }}>
                         {formatFCFA(item.prix * item.quantity)}
                       </span>
-                      <span style={{ fontSize: '0.72rem', color: '#64748b', display: 'block', marginTop: '1px' }}>
-                        ~ {formatEuro(item.prix * item.quantity)}
-                      </span>
                       {item.stock !== undefined && item.stock <= 5 && (
                         <span style={{ fontSize: '0.7rem', color: '#ea580c', fontWeight: '750', display: 'block', marginTop: '2px' }}>
                           (Max : {item.stock} dispo)
@@ -128,9 +125,6 @@ export default function CartDrawer() {
               <div style={{ textAlign: 'right' }}>
                 <span style={{ color: 'var(--primary-blue)', fontSize: '1.25rem', fontWeight: '900', display: 'block', lineHeight: 1.1 }}>
                   {formatFCFA(cartTotal)}
-                </span>
-                <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: '600' }}>
-                  ~ {formatEuro(cartTotal)}
                 </span>
               </div>
             </div>

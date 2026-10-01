@@ -7,7 +7,7 @@ import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import CartDrawer from '../components/layout/CartDrawer';
 import axios from '../api/axios';
-import { formatFCFA, formatEuro } from '../utils/priceUtils';
+import { formatFCFA } from '../utils/priceUtils';
 
 export default function CartPage() {
   const { cartItems, updateQuantity, removeFromCart, clearCart, cartTotal } = useCart();
@@ -130,7 +130,7 @@ export default function CartPage() {
                     Règlement par Mobile Money uniquement
                   </h4>
                   <p style={{ fontSize: '0.85rem', color: '#047857', margin: '4px 0 0 0' }}>
-                    Montant à transférer : <strong>{formatFCFA(lastOrderInfo?.total || 0)}</strong> (~ {formatEuro(lastOrderInfo?.total || 0)})
+                    Montant à transférer : <strong>{formatFCFA(lastOrderInfo?.total || 0)}</strong>
                   </p>
                 </div>
               </div>
@@ -200,7 +200,7 @@ export default function CartPage() {
             </Link>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: '1.25fr 0.75fr', gap: '30px' }}>
+          <div className="cart-page-main-grid">
             {/* Left: Items list */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               {cartItems.map((item) => {
@@ -281,9 +281,6 @@ export default function CartPage() {
                           <span style={{ fontSize: '1.1rem', fontWeight: '900', color: 'var(--primary-blue)', display: 'block', lineHeight: 1.1 }}>
                             {formatFCFA(item.prix * item.quantity)}
                           </span>
-                          <span style={{ fontSize: '0.72rem', color: '#64748b', display: 'block', marginTop: '2px' }}>
-                            ~ {formatEuro(item.prix * item.quantity)}
-                          </span>
                         </div>
                       </div>
                     </div>
@@ -302,7 +299,6 @@ export default function CartPage() {
                 <span>Sous-total articles</span>
                 <div style={{ textAlign: 'right' }}>
                   <span style={{ fontWeight: '700', color: '#0f172a', display: 'block' }}>{formatFCFA(cartTotal)}</span>
-                  <span style={{ fontSize: '0.72rem', color: '#64748b' }}>~ {formatEuro(cartTotal)}</span>
                 </div>
               </div>
 
@@ -316,9 +312,6 @@ export default function CartPage() {
                 <div style={{ textAlign: 'right' }}>
                   <span style={{ color: 'var(--primary-blue)', display: 'block', fontSize: '1.35rem', fontWeight: '900', lineHeight: 1.1 }}>
                     {formatFCFA(cartTotal)}
-                  </span>
-                  <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: '600', display: 'block', marginTop: '2px' }}>
-                    ~ {formatEuro(cartTotal)}
                   </span>
                 </div>
               </div>

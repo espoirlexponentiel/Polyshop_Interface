@@ -4,7 +4,7 @@ import axios from "../api/axios";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import { useAuth } from "../context/AuthContext";
-import { formatFCFA, formatEuro } from "../utils/priceUtils";
+import { formatFCFA } from "../utils/priceUtils";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
@@ -197,10 +197,9 @@ export default function OrdersPage() {
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "#f8fafc" }}>
       <Navbar />
 
-      <main style={{ flex: 1, maxWidth: "1280px", margin: "0 auto", width: "100%", padding: "36px 20px" }}>
-        
+      <main className="orders-page-main">
         {/* En-tête Principal */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "28px", flexWrap: "wrap", gap: "16px" }}>
+        <div className="orders-header-row">
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px" }}>
               <span style={{ fontSize: "1.8rem" }}>📦</span>
@@ -213,7 +212,7 @@ export default function OrdersPage() {
             </p>
           </div>
 
-          <div style={{ display: "flex", gap: "10px" }}>
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
             <button 
               onClick={fetchOrders}
               className="btn-admin-secondary"
@@ -290,7 +289,7 @@ export default function OrdersPage() {
               Vous n'avez pas encore passé de commande
             </h3>
             <p style={{ color: "#64748b", fontSize: "0.92rem", margin: "0 auto 24px", maxWidth: "450px", lineHeight: "1.6" }}>
-              Explorez notre rayon <strong>Mode & Vestimentaire</strong> pour ajouter vos premiers articles au panier !
+              Explorez notre marché <strong>Mode & Vestimentaire</strong> pour ajouter vos premiers articles au panier !
             </p>
             <Link 
               to="/" 
@@ -304,53 +303,45 @@ export default function OrdersPage() {
         ) : (
           <div>
             {/* 1. KPI Cards Row */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px", marginBottom: "28px" }}>
-              <div style={{ background: "#ffffff", padding: "18px 20px", borderRadius: "16px", border: "1px solid #e2e8f0", boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
-                <span style={{ fontSize: "0.78rem", fontWeight: "800", color: "#64748b", textTransform: "uppercase" }}>Total Commandes</span>
-                <div style={{ fontSize: "1.8rem", fontWeight: "900", color: "#0f172a", marginTop: "4px" }}>{stats.totalOrders}</div>
-                <span style={{ fontSize: "0.75rem", color: "#10b981", fontWeight: "700" }}>Historique complet enregistré</span>
+            <div className="orders-stats-grid">
+              <div className="orders-stat-card">
+                <span className="orders-stat-label">Total Commandes</span>
+                <div className="orders-stat-value">{stats.totalOrders}</div>
+                <span className="orders-stat-sub" style={{ color: "#10b981" }}>Historique complet</span>
               </div>
 
-              <div style={{ background: "#ffffff", padding: "18px 20px", borderRadius: "16px", border: "1px solid #e2e8f0", boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
-                <span style={{ fontSize: "0.78rem", fontWeight: "800", color: "#64748b", textTransform: "uppercase" }}>En cours</span>
-                <div style={{ fontSize: "1.8rem", fontWeight: "900", color: "#0066ff", marginTop: "4px" }}>{stats.inProgress}</div>
-                <span style={{ fontSize: "0.75rem", color: stats.inProgress > 0 ? "#0284c7" : "#64748b", fontWeight: "700" }}>
-                  {stats.inProgress > 0 ? "🚚 Suivi direct en carte" : "Aucune commande en cours"}
+              <div className="orders-stat-card">
+                <span className="orders-stat-label">En cours</span>
+                <div className="orders-stat-value" style={{ color: "#0066ff" }}>{stats.inProgress}</div>
+                <span className="orders-stat-sub" style={{ color: stats.inProgress > 0 ? "#0284c7" : "#64748b" }}>
+                  {stats.inProgress > 0 ? "🚚 Suivi direct" : "Aucune en cours"}
                 </span>
               </div>
 
-              <div style={{ background: "#ffffff", padding: "18px 20px", borderRadius: "16px", border: "1px solid #e2e8f0", boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
-                <span style={{ fontSize: "0.78rem", fontWeight: "800", color: "#64748b", textTransform: "uppercase" }}>Colis Livrés</span>
-                <div style={{ fontSize: "1.8rem", fontWeight: "900", color: "#059669", marginTop: "4px" }}>{stats.delivered}</div>
-                <span style={{ fontSize: "0.75rem", color: "#059669", fontWeight: "700" }}>✅ Réceptionnés avec succès</span>
+              <div className="orders-stat-card">
+                <span className="orders-stat-label">Colis Livrés</span>
+                <div className="orders-stat-value" style={{ color: "#059669" }}>{stats.delivered}</div>
+                <span className="orders-stat-sub" style={{ color: "#059669" }}>✅ Réceptionnés</span>
               </div>
 
-              <div style={{ background: "#ffffff", padding: "18px 20px", borderRadius: "16px", border: "1px solid #e2e8f0", boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
-                <span style={{ fontSize: "0.78rem", fontWeight: "800", color: "#64748b", textTransform: "uppercase" }}>Total Dépensé</span>
-                <div style={{ fontSize: "1.8rem", fontWeight: "900", color: "#0f172a", marginTop: "4px" }}>
+              <div className="orders-stat-card">
+                <span className="orders-stat-label">Total Dépensé</span>
+                <div className="orders-stat-value">
                   {formatFCFA(stats.totalSpent)}
                 </div>
-                <span style={{ fontSize: "0.75rem", color: "#64748b" }}>
-                  ~ {formatEuro(stats.totalSpent)}
-                </span>
+                <span className="orders-stat-sub" style={{ color: "#64748b" }}>Montant cumulé</span>
               </div>
             </div>
 
-            {/* 2. Les 3 Onglets de filtrage (Suppression de 'Toutes les commandes') */}
-            <div style={{ display: "flex", gap: "8px", marginBottom: "20px", borderBottom: "1px solid #e2e8f0", paddingBottom: "12px", flexWrap: "wrap" }}>
+            {/* 2. Les 3 Onglets de filtrage */}
+            <div className="orders-tabs-nav">
               <button 
                 onClick={() => setActiveTab("in_progress")}
+                className="orders-tab-btn"
                 style={{
-                  padding: "10px 22px",
-                  borderRadius: "9999px",
-                  border: "none",
                   background: activeTab === "in_progress" ? "#0066ff" : "#ffffff",
                   color: activeTab === "in_progress" ? "#ffffff" : "#475569",
-                  fontWeight: "800",
-                  fontSize: "0.88rem",
-                  cursor: "pointer",
-                  boxShadow: activeTab === "in_progress" ? "0 4px 12px rgba(0, 102, 255, 0.25)" : "none",
-                  transition: "all 0.2s ease"
+                  boxShadow: activeTab === "in_progress" ? "0 4px 12px rgba(0, 102, 255, 0.25)" : "none"
                 }}
               >
                 🚚 En cours ({stats.inProgress})
@@ -358,17 +349,11 @@ export default function OrdersPage() {
 
               <button 
                 onClick={() => setActiveTab("delivered")}
+                className="orders-tab-btn"
                 style={{
-                  padding: "10px 22px",
-                  borderRadius: "9999px",
-                  border: "none",
                   background: activeTab === "delivered" ? "#059669" : "#ffffff",
                   color: activeTab === "delivered" ? "#ffffff" : "#475569",
-                  fontWeight: "800",
-                  fontSize: "0.88rem",
-                  cursor: "pointer",
-                  boxShadow: activeTab === "delivered" ? "0 4px 12px rgba(5, 150, 105, 0.25)" : "none",
-                  transition: "all 0.2s ease"
+                  boxShadow: activeTab === "delivered" ? "0 4px 12px rgba(5, 150, 105, 0.25)" : "none"
                 }}
               >
                 ✅ Livrées ({stats.delivered})
@@ -376,17 +361,11 @@ export default function OrdersPage() {
 
               <button 
                 onClick={() => setActiveTab("cancelled")}
+                className="orders-tab-btn"
                 style={{
-                  padding: "10px 22px",
-                  borderRadius: "9999px",
-                  border: "none",
                   background: activeTab === "cancelled" ? "#dc2626" : "#ffffff",
                   color: activeTab === "cancelled" ? "#ffffff" : "#475569",
-                  fontWeight: "800",
-                  fontSize: "0.88rem",
-                  cursor: "pointer",
-                  boxShadow: activeTab === "cancelled" ? "0 4px 12px rgba(220, 38, 38, 0.25)" : "none",
-                  transition: "all 0.2s ease"
+                  boxShadow: activeTab === "cancelled" ? "0 4px 12px rgba(220, 38, 38, 0.25)" : "none"
                 }}
               >
                 ❌ Annulées ({stats.cancelled})
@@ -395,7 +374,7 @@ export default function OrdersPage() {
 
             {/* 3. Affichage : CARTE pour 'En cours' & EN LIGNE pour les 2 autres */}
             {filteredOrders.length === 0 ? (
-              <div style={{ padding: "40px", textAlign: "center", background: "#ffffff", borderRadius: "16px", border: "1px solid #e2e8f0" }}>
+              <div style={{ padding: "40px 20px", textAlign: "center", background: "#ffffff", borderRadius: "16px", border: "1px solid #e2e8f0" }}>
                 <p style={{ color: "#64748b", fontSize: "0.95rem", fontWeight: "700" }}>
                   Aucune commande trouvée dans cet onglet.
                 </p>
@@ -404,7 +383,7 @@ export default function OrdersPage() {
               /* ============================================================
                  A. VUE CARTE (Uniquement pour l'onglet 'En cours')
                  ============================================================ */
-              <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "16px", width: "100%" }}>
                 {filteredOrders.map((order) => {
                   const statusConf = getStatusConfig(order.statut || order.status);
                   const isPending = (order.statut || order.status || "").toUpperCase() === "EN_ATTENTE";
@@ -413,28 +392,10 @@ export default function OrdersPage() {
                   const rayon = getOrderMarket(order);
 
                   return (
-                    <div 
-                      key={order.id} 
-                      style={{
-                        background: "#ffffff",
-                        border: "1px solid #e2e8f0",
-                        borderRadius: "20px",
-                        boxShadow: "0 6px 24px rgba(0,0,0,0.03)",
-                        overflow: "hidden"
-                      }}
-                    >
+                    <div key={order.id} className="order-card-box">
                       {/* En-tête de la Carte */}
-                      <div style={{
-                        padding: "18px 24px",
-                        background: "#fcfdfe",
-                        borderBottom: "1px solid #eef2f6",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        flexWrap: "wrap",
-                        gap: "12px"
-                      }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+                      <div className="order-card-header">
+                        <div className="order-card-header-top">
                           <div>
                             <span style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: "800", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                               Référence Commande
@@ -444,81 +405,70 @@ export default function OrdersPage() {
                             </div>
                           </div>
 
-                          <div style={{ height: "24px", width: "1px", background: "#cbd5e1" }}></div>
-
-                          <div>
-                            <span style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: "800", textTransform: "uppercase" }}>
-                              Date & Heure
-                            </span>
-                            <div style={{ fontSize: "0.88rem", fontWeight: "700", color: "#334155" }}>
-                              📅 {formatDate(order.createdAt || order.date)}
-                            </div>
-                          </div>
-
-                          <div>
-                            <span style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: "800", textTransform: "uppercase" }}>
-                              Rayon d'origine
-                            </span>
-                            <div style={{ fontSize: "0.85rem", fontWeight: "700", color: "#475569" }}>
-                              {rayon}
-                            </div>
+                          <div style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            padding: "6px 14px",
+                            borderRadius: "9999px",
+                            background: statusConf.bg,
+                            color: statusConf.color,
+                            border: `1.5px solid ${statusConf.border}`,
+                            fontWeight: "800",
+                            fontSize: "0.85rem",
+                            flexShrink: 0
+                          }}>
+                            <span>{statusConf.icon}</span>
+                            <span>{statusConf.label}</span>
                           </div>
                         </div>
 
-                        {/* Statut Badge */}
-                        <div style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "8px",
-                          padding: "6px 16px",
-                          borderRadius: "9999px",
-                          background: statusConf.bg,
-                          color: statusConf.color,
-                          border: `1.5px solid ${statusConf.border}`,
-                          fontWeight: "800",
-                          fontSize: "0.88rem"
-                        }}>
-                          <span>{statusConf.icon}</span>
-                          <span>{statusConf.label}</span>
+                        <div className="order-card-header-bottom">
+                          <div>
+                            📅 <strong>{formatDate(order.createdAt || order.date)}</strong>
+                          </div>
+                          <div>
+                            {rayon}
+                          </div>
                         </div>
                       </div>
 
                       {/* Stepper Visuel de Suivi en Direct */}
                       {statusConf.stepIndex >= 0 && (
-                        <div style={{ padding: "20px 24px", background: "#f8fafc", borderBottom: "1px solid #eef2f6" }}>
-                          <div style={{ display: "flex", justifyContent: "space-between", position: "relative", maxWidth: "800px", margin: "0 auto" }}>
+                        <div className="stepper-scroll-container">
+                          <div className="stepper-track-inner">
                             {[
-                              { label: "1. Reçue", sub: "Commande validée" },
+                              { label: "1. Reçue", sub: "Validée" },
                               { label: "2. Préparation", sub: "En atelier" },
                               { label: "3. Expédition", sub: "En transit" },
-                              { label: "4. Livraison", sub: "Colis remis" }
+                              { label: "4. Livraison", sub: "Remise" }
                             ].map((step, sIdx) => {
                               const isCompleted = statusConf.stepIndex >= sIdx;
                               const isCurrent = statusConf.stepIndex === sIdx;
 
                               return (
-                                <div key={sIdx} style={{ flex: 1, textAlign: "center", position: "relative", zIndex: 1 }}>
+                                <div key={sIdx} style={{ flex: 1, minWidth: "70px", textAlign: "center", position: "relative", zIndex: 1 }}>
                                   <div style={{
-                                    width: "36px",
-                                    height: "36px",
+                                    width: "30px",
+                                    height: "30px",
                                     borderRadius: "50%",
                                     background: isCompleted ? (isCurrent ? "#0066ff" : "#10b981") : "#e2e8f0",
                                     color: isCompleted ? "#ffffff" : "#64748b",
                                     display: "flex",
                                     alignItems: "center",
                                     justifyContent: "center",
-                                    margin: "0 auto 6px",
+                                    margin: "0 auto 4px",
                                     fontWeight: "900",
-                                    fontSize: "0.9rem",
-                                    boxShadow: isCurrent ? "0 0 0 4px rgba(0, 102, 255, 0.2)" : "none",
+                                    fontSize: "0.82rem",
+                                    boxShadow: isCurrent ? "0 0 0 3px rgba(0, 102, 255, 0.2)" : "none",
                                     transition: "all 0.3s ease"
                                   }}>
                                     {isCompleted && !isCurrent ? "✓" : sIdx + 1}
                                   </div>
-                                  <div style={{ fontSize: "0.82rem", fontWeight: isCurrent ? "900" : "700", color: isCurrent ? "#0066ff" : isCompleted ? "#0f172a" : "#94a3b8" }}>
+                                  <div style={{ fontSize: "0.75rem", fontWeight: isCurrent ? "900" : "700", color: isCurrent ? "#0066ff" : isCompleted ? "#0f172a" : "#94a3b8" }}>
                                     {step.label}
                                   </div>
-                                  <div style={{ fontSize: "0.72rem", color: "#94a3b8" }}>
+                                  <div style={{ fontSize: "0.65rem", color: "#94a3b8" }}>
                                     {step.sub}
                                   </div>
                                 </div>
@@ -529,12 +479,12 @@ export default function OrdersPage() {
                       )}
 
                       {/* Liste des Articles Commandés */}
-                      <div style={{ padding: "20px 24px" }}>
-                        <h4 style={{ fontSize: "0.82rem", fontWeight: "800", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "14px" }}>
+                      <div className="order-card-body">
+                        <h4 style={{ fontSize: "0.78rem", fontWeight: "800", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "10px" }}>
                           Articles Commandés ({orderItems.reduce((s, it) => s + (it.quantity || 1), 0)})
                         </h4>
 
-                        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                           {orderItems.map((item, itIdx) => {
                             const prod = item.product || {};
                             const pName = prod.nom || item.nom || "Article 7 Shop";
@@ -544,39 +494,26 @@ export default function OrdersPage() {
                             const lineTotal = pPrice * pQty;
 
                             return (
-                              <div 
-                                key={itIdx} 
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "space-between",
-                                  padding: "12px 16px",
-                                  borderRadius: "14px",
-                                  background: "#f8fafc",
-                                  border: "1px solid #eef2f6",
-                                  gap: "16px",
-                                  flexWrap: "wrap"
-                                }}
-                              >
-                                <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                              <div key={itIdx} className="order-card-item-row">
+                                <div className="order-card-item-left">
                                   <img 
                                     src={pImg} 
                                     alt={pName} 
-                                    style={{ width: "64px", height: "64px", objectFit: "cover", borderRadius: "10px", border: "1px solid #cbd5e1", background: "#fff" }}
+                                    className="order-card-item-img"
                                   />
-                                  <div>
-                                    <strong style={{ fontSize: "0.98rem", color: "#0f172a", display: "block" }}>
+                                  <div style={{ minWidth: 0, flex: 1 }}>
+                                    <strong className="order-card-item-name">
                                       {pName}
                                     </strong>
                                     
-                                    <div style={{ display: "flex", gap: "8px", marginTop: "4px", fontSize: "0.78rem", color: "#64748b" }}>
+                                    <div style={{ display: "flex", gap: "4px", marginTop: "2px", fontSize: "0.72rem", color: "#64748b", flexWrap: "wrap" }}>
                                       {item.taille && (
-                                        <span style={{ background: "#ffffff", padding: "2px 8px", borderRadius: "6px", border: "1px solid #e2e8f0" }}>
+                                        <span style={{ background: "#ffffff", padding: "1px 6px", borderRadius: "4px", border: "1px solid #e2e8f0" }}>
                                           Taille : <strong>{item.taille}</strong>
                                         </span>
                                       )}
                                       {item.couleur && (
-                                        <span style={{ background: "#ffffff", padding: "2px 8px", borderRadius: "6px", border: "1px solid #e2e8f0" }}>
+                                        <span style={{ background: "#ffffff", padding: "1px 6px", borderRadius: "4px", border: "1px solid #e2e8f0" }}>
                                           Couleur : <strong>{item.couleur}</strong>
                                         </span>
                                       )}
@@ -584,16 +521,13 @@ export default function OrdersPage() {
                                   </div>
                                 </div>
 
-                                <div style={{ textAlign: "right" }}>
-                                  <div style={{ fontSize: "0.85rem", color: "#64748b" }}>
+                                <div className="order-card-item-price-block">
+                                  <div style={{ fontSize: "0.76rem", color: "#64748b", whiteSpace: "nowrap" }}>
                                     {pQty} × {formatFCFA(pPrice)}
                                   </div>
-                                  <strong style={{ fontSize: "1.1rem", color: "#0066ff" }}>
+                                  <strong style={{ fontSize: "0.95rem", color: "#0066ff", whiteSpace: "nowrap" }}>
                                     {formatFCFA(lineTotal)}
                                   </strong>
-                                  <div style={{ fontSize: "0.72rem", color: "#64748b" }}>
-                                    ~ {formatEuro(lineTotal)}
-                                  </div>
                                 </div>
                               </div>
                             );
@@ -602,56 +536,44 @@ export default function OrdersPage() {
                       </div>
 
                       {/* Pied de Carte : Infos & Actions */}
-                      <div style={{
-                        padding: "18px 24px",
-                        background: "#ffffff",
-                        borderTop: "1px solid #eef2f6",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        flexWrap: "wrap",
-                        gap: "16px"
-                      }}>
-                        <div style={{ fontSize: "0.85rem", color: "#475569", maxWidth: "500px" }}>
+                      <div className="order-card-footer">
+                        <div style={{ fontSize: "0.80rem", color: "#475569", width: "100%", maxWidth: "500px" }}>
                           {order.adresseLivraison && (
-                            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "3px" }}>
                               <span>📍</span>
                               <span><strong>Livraison :</strong> {order.adresseLivraison}</span>
                             </div>
                           )}
                           {order.telephone && (
-                            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "3px" }}>
                               <span>📞</span>
                               <span><strong>Contact :</strong> {order.telephone}</span>
                             </div>
                           )}
-                          <div style={{ display: "flex", alignItems: "center", gap: "12px", fontSize: "0.78rem", color: "#64748b" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "0.74rem", color: "#64748b", flexWrap: "wrap" }}>
                             <span>📱 {order.modePaiement || "Mobile Money"}</span>
                             <span>•</span>
-                            <span style={{ color: "#059669", fontWeight: "700" }}>🚚 Livraison Express Gratuite</span>
+                            <span style={{ color: "#059669", fontWeight: "700" }}>🚚 Express Gratuite</span>
                           </div>
                         </div>
 
-                        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                          <div style={{ textAlign: "right" }}>
-                            <span style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: "800", textTransform: "uppercase" }}>
+                        <div className="order-card-footer-actions">
+                          <div>
+                            <span style={{ fontSize: "0.70rem", color: "#64748b", fontWeight: "800", textTransform: "uppercase", display: "block" }}>
                               Total Payé TTC
                             </span>
-                            <div style={{ fontSize: "1.4rem", fontWeight: "900", color: "#0f172a" }}>
+                            <div style={{ fontSize: "1.25rem", fontWeight: "900", color: "#0f172a", whiteSpace: "nowrap" }}>
                               {formatFCFA(orderTotal)}
                             </div>
-                            <span style={{ fontSize: "0.75rem", color: "#64748b" }}>
-                              ~ {formatEuro(orderTotal)}
-                            </span>
                           </div>
 
-                          <div style={{ display: "flex", gap: "8px" }}>
+                          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", flexShrink: 0 }}>
                             {isPending && (
                               <button
                                 onClick={() => handleCancelOrder(order.id)}
                                 disabled={cancellingId === order.id}
                                 className="btn-admin-danger"
-                                style={{ padding: "8px 14px", fontSize: "0.82rem", borderRadius: "10px" }}
+                                style={{ padding: "8px 12px", fontSize: "0.80rem", borderRadius: "8px" }}
                                 title="Annuler ma commande"
                               >
                                 {cancellingId === order.id ? "Annulation..." : "❌ Annuler"}
@@ -661,7 +583,7 @@ export default function OrdersPage() {
                             <button
                               onClick={() => window.print()}
                               className="btn-admin-secondary"
-                              style={{ padding: "8px 14px", fontSize: "0.82rem", borderRadius: "10px", fontWeight: "700" }}
+                              style={{ padding: "8px 14px", fontSize: "0.80rem", borderRadius: "8px", fontWeight: "700" }}
                               title="Imprimer le reçu"
                             >
                               🖨️ Reçu
@@ -678,7 +600,8 @@ export default function OrdersPage() {
               /* ============================================================
                  B. VUE EN LIGNE (Pour les onglets 'Livrées' et 'Annulées')
                  ============================================================ */
-              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <div className="orders-inline-table-wrap">
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px", width: "100%" }}>
                 {filteredOrders.map((order) => {
                   const statusConf = getStatusConfig(order.statut || order.status);
                   const orderItems = order.items || [];
@@ -694,45 +617,46 @@ export default function OrdersPage() {
                   }).join(", ");
 
                   return (
-                    <div 
-                      key={order.id}
-                      style={{
-                        background: "#ffffff",
-                        border: "1px solid #e2e8f0",
-                        borderRadius: "14px",
-                        boxShadow: "0 2px 6px rgba(0,0,0,0.02)",
-                        transition: "all 0.2s ease",
-                        overflow: "hidden"
-                      }}
-                    >
-                      {/* Ligne Principale */}
+                    <div key={order.id} className="order-row-item">
+                      {/* Ligne Principale Responsive */}
                       <div 
-                        style={{
-                          padding: "16px 20px",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          flexWrap: "wrap",
-                          gap: "16px",
-                          cursor: "pointer"
-                        }}
+                        className="order-row-main"
                         onClick={() => toggleRowExpansion(order.id)}
                       >
-                        {/* 1. Référence & Date */}
-                        <div style={{ minWidth: "160px" }}>
-                          <div style={{ fontSize: "1rem", fontWeight: "900", color: "#0066ff" }}>
-                            #CMD-{String(order.id).padStart(5, "0")}
+                        {/* 1. En-tête : Référence + Date à gauche, Statut à droite */}
+                        <div className="order-row-header-mobile">
+                          <div>
+                            <div style={{ fontSize: "1.05rem", fontWeight: "900", color: "#0066ff" }}>
+                              #CMD-{String(order.id).padStart(5, "0")}
+                            </div>
+                            <div style={{ fontSize: "0.78rem", color: "#64748b", marginTop: "2px" }}>
+                              📅 {formatDate(order.createdAt || order.date)}
+                            </div>
                           </div>
-                          <div style={{ fontSize: "0.78rem", color: "#64748b", marginTop: "2px" }}>
-                            📅 {formatDate(order.createdAt || order.date)}
+
+                          <div style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "6px",
+                            padding: "4px 12px",
+                            borderRadius: "9999px",
+                            background: statusConf.bg,
+                            color: statusConf.color,
+                            border: `1px solid ${statusConf.border}`,
+                            fontWeight: "800",
+                            fontSize: "0.82rem",
+                            flexShrink: 0
+                          }}>
+                            <span>{statusConf.icon}</span>
+                            <span>{statusConf.label}</span>
                           </div>
                         </div>
 
-                        {/* 2. Rayon & Articles en ligne */}
-                        <div style={{ flex: 1, minWidth: "220px" }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+                        {/* 2. Rayon & Résumé Articles */}
+                        <div className="order-row-summary-mobile">
+                          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
                             <span style={{
-                              fontSize: "0.75rem",
+                              fontSize: "0.74rem",
                               fontWeight: "800",
                               background: rayon.includes("Alim") ? "#fef3c7" : "#eff6ff",
                               color: rayon.includes("Alim") ? "#92400e" : "#1e40af",
@@ -741,77 +665,56 @@ export default function OrdersPage() {
                             }}>
                               {rayon}
                             </span>
-                            <span style={{ fontSize: "0.8rem", color: "#475569", fontWeight: "700" }}>
+                            <span style={{ fontSize: "0.78rem", color: "#475569", fontWeight: "700" }}>
                               ({totalItemsCount} article{totalItemsCount > 1 ? "s" : ""})
                             </span>
                           </div>
                           <div style={{
-                            fontSize: "0.86rem",
+                            fontSize: "0.85rem",
                             color: "#334155",
-                            whiteSpace: "nowrap",
                             overflow: "hidden",
                             textOverflow: "ellipsis",
-                            maxWidth: "400px"
+                            maxWidth: "100%",
+                            lineHeight: "1.35"
                           }}>
                             {articlesSummary || "Détails de la commande"}
                           </div>
                         </div>
 
-                        {/* 3. Statut Badge Compact */}
-                        <div style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "6px",
-                          padding: "4px 12px",
-                          borderRadius: "9999px",
-                          background: statusConf.bg,
-                          color: statusConf.color,
-                          border: `1px solid ${statusConf.border}`,
-                          fontWeight: "800",
-                          fontSize: "0.82rem"
-                        }}>
-                          <span>{statusConf.icon}</span>
-                          <span>{statusConf.label}</span>
-                        </div>
-
-                        {/* 4. Montant Total */}
-                        <div style={{ textAlign: "right", minWidth: "120px" }}>
-                          <div style={{ fontSize: "1.1rem", fontWeight: "900", color: "#0f172a" }}>
-                            {formatFCFA(orderTotal)}
+                        {/* 3. Pied de ligne : Montant + Boutons d'action */}
+                        <div className="order-row-footer-mobile" onClick={(e) => e.stopPropagation()}>
+                          <div>
+                            <span style={{ fontSize: "0.70rem", color: "#64748b", fontWeight: "800", textTransform: "uppercase", display: "block" }}>
+                              Total TTC
+                            </span>
+                            <div style={{ fontSize: "1.15rem", fontWeight: "900", color: "#0f172a", whiteSpace: "nowrap" }}>
+                              {formatFCFA(orderTotal)}
+                            </div>
                           </div>
-                          <div style={{ fontSize: "0.72rem", color: "#64748b" }}>
-                            ~ {formatEuro(orderTotal)}
-                          </div>
-                        </div>
 
-                        {/* 5. Bouton d'action et Déroulant */}
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }} onClick={(e) => e.stopPropagation()}>
-                          <button
-                            onClick={() => toggleRowExpansion(order.id)}
-                            className="btn-admin-secondary"
-                            style={{ padding: "6px 12px", fontSize: "0.8rem", borderRadius: "8px", fontWeight: "700", display: "flex", alignItems: "center", gap: "4px" }}
-                          >
-                            <span>{isExpanded ? "▲ Fermer" : "▼ Détails"}</span>
-                          </button>
-                          <button
-                            onClick={() => window.print()}
-                            className="btn-admin-secondary"
-                            style={{ padding: "6px 12px", fontSize: "0.8rem", borderRadius: "8px", fontWeight: "700" }}
-                            title="Imprimer le reçu"
-                          >
-                            🖨️
-                          </button>
+                          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
+                            <button
+                              onClick={() => toggleRowExpansion(order.id)}
+                              className="btn-admin-secondary"
+                              style={{ padding: "6px 12px", fontSize: "0.80rem", borderRadius: "8px", fontWeight: "700", display: "flex", alignItems: "center", gap: "4px", whiteSpace: "nowrap" }}
+                            >
+                              <span>{isExpanded ? "▲ Fermer" : "▼ Détails"}</span>
+                            </button>
+                            <button
+                              onClick={() => window.print()}
+                              className="btn-admin-secondary"
+                              style={{ padding: "6px 12px", fontSize: "0.80rem", borderRadius: "8px", fontWeight: "700" }}
+                              title="Imprimer le reçu"
+                            >
+                              🖨️
+                            </button>
+                          </div>
                         </div>
                       </div>
 
                       {/* Volet déroulant détaillé pour la ligne */}
                       {isExpanded && (
-                        <div style={{
-                          padding: "16px 20px",
-                          background: "#f8fafc",
-                          borderTop: "1px solid #eef2f6",
-                          animation: "fadeIn 0.2s ease-in-out"
-                        }}>
+                        <div className="order-row-expanded-panel">
                           <h5 style={{ fontSize: "0.78rem", fontWeight: "800", color: "#64748b", textTransform: "uppercase", marginBottom: "10px" }}>
                             Détail des articles achetés :
                           </h5>
@@ -831,39 +734,39 @@ export default function OrdersPage() {
                                     display: "flex",
                                     alignItems: "center",
                                     justifyContent: "space-between",
-                                    padding: "8px 12px",
+                                    padding: "8px 10px",
                                     background: "#ffffff",
                                     borderRadius: "8px",
-                                    border: "1px solid #e2e8f0"
+                                    border: "1px solid #e2e8f0",
+                                    gap: "8px",
+                                    width: "100%",
+                                    boxSizing: "border-box"
                                   }}
                                 >
-                                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                  <div style={{ display: "flex", alignItems: "center", gap: "10px", flex: 1, minWidth: 0 }}>
                                     <img 
                                       src={pImg} 
                                       alt={pName} 
-                                      style={{ width: "36px", height: "36px", objectFit: "cover", borderRadius: "6px", border: "1px solid #cbd5e1" }}
+                                      style={{ width: "36px", height: "36px", objectFit: "cover", borderRadius: "6px", border: "1px solid #cbd5e1", flexShrink: 0 }}
                                     />
-                                    <div>
-                                      <span style={{ fontSize: "0.88rem", fontWeight: "700", color: "#1e293b" }}>{pName}</span>
+                                    <div style={{ minWidth: 0, flex: 1 }}>
+                                      <span style={{ fontSize: "0.84rem", fontWeight: "700", color: "#1e293b", wordBreak: "break-word", display: "block", lineHeight: "1.25" }}>{pName}</span>
                                       {(item.taille || item.couleur) && (
-                                        <span style={{ fontSize: "0.75rem", color: "#64748b", marginLeft: "8px" }}>
-                                          ({[item.taille && `Taille: ${item.taille}`, item.couleur && `Couleur: ${item.couleur}`].filter(Boolean).join(", ")})
+                                        <span style={{ fontSize: "0.72rem", color: "#64748b", marginTop: "2px", display: "inline-block" }}>
+                                          {[item.taille && `Taille: ${item.taille}`, item.couleur && `Couleur: ${item.couleur}`].filter(Boolean).join(" • ")}
                                         </span>
                                       )}
                                     </div>
                                   </div>
-                                  <div style={{ fontSize: "0.85rem", fontWeight: "800", color: "#0066ff" }}>
-                                    {pQty} × {formatFCFA(pPrice)} = {formatFCFA(pQty * pPrice)}
-                                    <span style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: "600", marginLeft: "6px" }}>
-                                      (~ {formatEuro(pQty * pPrice)})
-                                    </span>
+                                  <div style={{ fontSize: "0.82rem", fontWeight: "800", color: "#0066ff", marginLeft: "auto", flexShrink: 0, whiteSpace: "nowrap" }}>
+                                    {pQty} × {formatFCFA(pPrice)}
                                   </div>
                                 </div>
                               );
                             })}
                           </div>
 
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.82rem", color: "#64748b", flexWrap: "wrap", gap: "10px" }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.80rem", color: "#64748b", flexWrap: "wrap", gap: "10px" }}>
                             <div>
                               {order.adresseLivraison && <span>📍 {order.adresseLivraison} • </span>}
                               {order.telephone && <span>📞 {order.telephone} • </span>}
@@ -871,9 +774,6 @@ export default function OrdersPage() {
                             </div>
                             <div style={{ fontWeight: "700", color: "#0f172a" }}>
                               Total commande : <strong style={{ color: "#0066ff" }}>{formatFCFA(orderTotal)}</strong>
-                              <span style={{ fontSize: "0.75rem", color: "#64748b", marginLeft: "4px" }}>
-                                (~ {formatEuro(orderTotal)})
-                              </span>
                             </div>
                           </div>
                         </div>
@@ -881,6 +781,7 @@ export default function OrdersPage() {
                     </div>
                   );
                 })}
+                </div>
               </div>
             )}
           </div>

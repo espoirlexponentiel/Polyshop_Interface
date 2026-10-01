@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from '../../api/axios';
 import DualPrice from '../../components/common/DualPrice';
-import { formatFCFA, formatEuro } from '../../utils/priceUtils';
+import { formatFCFA } from '../../utils/priceUtils';
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState([]);
@@ -285,9 +285,6 @@ export default function AdminOrdersPage() {
                         <strong style={{ fontSize: '0.95rem', color: '#0f172a', display: 'block' }}>
                           {formatFCFA(item.quantity * (item.unitPrice || 0))}
                         </strong>
-                        <span style={{ fontSize: '0.7rem', color: '#64748b' }}>
-                          ~ {formatEuro(item.quantity * (item.unitPrice || 0))}
-                        </span>
                       </div>
                     </div>
                   ))}
@@ -303,9 +300,6 @@ export default function AdminOrdersPage() {
                   <span style={{ fontSize: '0.78rem', color: '#64748b', textTransform: 'uppercase', display: 'block', fontWeight: '800' }}>Total TTC Commande</span>
                   <span style={{ fontSize: '1.4rem', fontWeight: '900', color: '#0066ff', display: 'block', lineHeight: 1.1 }}>
                     {formatFCFA(activeModalOrder.totalAmount || activeModalOrder.total || 0)}
-                  </span>
-                  <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: '600' }}>
-                    ~ {formatEuro(activeModalOrder.totalAmount || activeModalOrder.total || 0)}
                   </span>
                 </div>
               </div>

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useMarket } from '../../context/MarketContext';
 import axios from '../../api/axios';
 import DualPrice from '../../components/common/DualPrice';
-import { formatEuro } from '../../utils/priceUtils';
 
 export default function AdminProductsPage() {
   const { markets, allProducts, loading, addProduct, updateProduct, deleteProduct, fetchProducts } = useMarket();
@@ -372,11 +371,6 @@ export default function AdminProductsPage() {
                       required
                       className="admin-input"
                     />
-                    {formData.prix && !isNaN(Number(formData.prix)) && (
-                      <span style={{ fontSize: '0.72rem', color: '#0284c7', fontWeight: '700', marginTop: '3px', display: 'block' }}>
-                        ~ {formatEuro(formData.prix)}
-                      </span>
-                    )}
                   </div>
                   <div className="form-group-admin">
                     <label>Prix Barré (FCFA)</label>
@@ -389,11 +383,6 @@ export default function AdminProductsPage() {
                       placeholder="Optionnel (ex: 18000)"
                       className="admin-input"
                     />
-                    {formData.ancienPrix && !isNaN(Number(formData.ancienPrix)) && (
-                      <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: '600', marginTop: '3px', display: 'block' }}>
-                        ~ {formatEuro(formData.ancienPrix)}
-                      </span>
-                    )}
                   </div>
                   <div className="form-group-admin">
                     <label>Stock</label>

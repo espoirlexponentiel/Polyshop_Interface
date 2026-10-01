@@ -48,10 +48,10 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Column 2: Rayons & Articles (Dynamique selon le Marché) */}
+          {/* Column 2: Marché & Articles (Dynamique selon le Marché) */}
           <div className="footer-col">
             <h4 className="footer-col-title">
-              RAYONS {activeMarket?.nom?.toUpperCase() || 'ARTICLES'}
+              MARCHÉ {activeMarket?.nom?.toUpperCase() || '7 SHOP'}
             </h4>
             <ul className="footer-links-list">
               {categories.slice(0, 9).map((cat, idx) => (

@@ -15,7 +15,7 @@ export default function ProductCard({ product, onQuickView }) {
 
   const categoryName = typeof product.category === 'object' && product.category 
     ? product.category.nom 
-    : (product.category || 'Rayon 7 Shop');
+    : (product.category || 'Article 7 Shop');
 
   const stock = product.stock !== undefined && product.stock !== null ? Number(product.stock) : 0;
   const isOutOfStock = stock <= 0;
@@ -86,18 +86,18 @@ export default function ProductCard({ product, onQuickView }) {
       </p>
 
       {/* Stock remaining info */}
-      <div style={{ marginTop: '6px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+      <div className="card-stock-wrap">
         {stock > 5 ? (
-          <span style={{ fontSize: '0.74rem', color: '#16a34a', fontWeight: '700' }}>
-            ✓ En stock ({stock} restants)
+          <span className="stock-badge stock-available">
+            ✓ En stock ({stock})
           </span>
         ) : stock > 0 ? (
-          <span style={{ fontSize: '0.74rem', color: '#ea580c', fontWeight: '800', background: '#ffedd5', padding: '2px 6px', borderRadius: '4px' }}>
-            ⚠️ Plus que {stock} restants !
+          <span className="stock-badge stock-warning">
+            ⚠️ {stock} restant{stock > 1 ? 's' : ''}
           </span>
         ) : (
-          <span style={{ fontSize: '0.74rem', color: '#dc2626', fontWeight: '800', background: '#fee2e2', padding: '2px 6px', borderRadius: '4px' }}>
-            ✕ Rupture de stock
+          <span className="stock-badge stock-out">
+            ✕ Rupture
           </span>
         )}
       </div>
@@ -116,11 +116,12 @@ export default function ProductCard({ product, onQuickView }) {
       )}
 
       {/* Footer: Prices and + Ajouter */}
-      <div className="card-footer-row" style={{ alignItems: 'flex-end' }}>
+      <div className="card-footer-row">
         <DualPrice 
           price={product.prix} 
           oldPrice={product.ancienPrix} 
           size="md"
+          className="card-dual-price"
         />
 
         <button 
@@ -130,7 +131,8 @@ export default function ProductCard({ product, onQuickView }) {
           style={isOutOfStock ? { background: '#cbd5e1', color: '#64748b', cursor: 'not-allowed', boxShadow: 'none' } : {}}
           title={isOutOfStock ? "Article en rupture" : "Ajouter au panier"}
         >
-          {isOutOfStock ? 'Épuisé' : '+ Ajouter'}
+          <span className="btn-add-label-desktop">{isOutOfStock ? 'Épuisé' : '+ Ajouter'}</span>
+          <span className="btn-add-label-mobile">{isOutOfStock ? '✕' : '+'}</span>
         </button>
       </div>
     </div>

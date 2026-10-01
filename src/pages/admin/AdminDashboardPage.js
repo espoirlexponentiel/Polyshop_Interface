@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useMarket } from '../../context/MarketContext';
 import axios from '../../api/axios';
-import { formatFCFA, formatEuro } from '../../utils/priceUtils';
+import { formatFCFA } from '../../utils/priceUtils';
 
 export default function AdminDashboardPage() {
   const { markets, dbMarkets, allProducts, loading: loadingMarkets } = useMarket();
@@ -45,7 +45,6 @@ export default function AdminDashboardPage() {
           <div className="kpi-info-col">
             <span className="kpi-label">Chiffre d'Affaires Réel</span>
             <span className="kpi-value">{formatFCFA(totalRevenue)}</span>
-            <span className="kpi-subtext">~ {formatEuro(totalRevenue)}</span>
           </div>
           <div className="kpi-icon-box icon-green">💰</div>
         </div>

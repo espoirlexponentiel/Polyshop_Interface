@@ -58,9 +58,6 @@ export default function Navbar() {
           <Link to="/" className={`nav-link-btn ${location.pathname === '/' ? 'active' : ''}`}>
             Boutique
           </Link>
-          <a href="#catalogue" className="nav-link-btn">
-            Rayons
-          </a>
           <Link to={isAuthenticated ? "/orders" : "/login"} className={`nav-link-btn ${location.pathname === '/orders' ? 'active' : ''}`}>
             Mes Commandes
           </Link>
@@ -91,7 +88,7 @@ export default function Navbar() {
               title="Cliquez pour changer de marché"
             >
               <span className="nav-market-text">
-                <span className="nav-market-sub">Marché :</span>
+                <span className="nav-market-sub">Marché</span>
                 <strong className="nav-market-current-name">{activeMarket?.nom || 'Sélectionner'}</strong>
               </span>
               <span className={`nav-market-chevron ${marketDropdownOpen ? 'rotate' : ''}`}>▾</span>
@@ -100,8 +97,8 @@ export default function Navbar() {
             {marketDropdownOpen && (
               <div className="nav-market-dropdown-panel">
                 <div className="nav-market-panel-header">
-                  <span className="panel-title">🏪 Nos Marchés & Univers</span>
-                  <span className="panel-subtitle">Cliquez pour changer d'univers</span>
+                  <span className="panel-title">🏪 Marché</span>
+                  <span className="panel-subtitle">Changer de marché</span>
                 </div>
                 <div className="nav-market-list">
                   {visibleMarkets.map((market) => {
@@ -121,7 +118,7 @@ export default function Navbar() {
                         <div className="option-info">
                           <span className="option-name">{market.nom}</span>
                           <span className="option-desc">
-                            {market.categories?.length || 0} rayons • Produits dédiés
+                            {market.products?.length || 0} articles disponibles
                           </span>
                         </div>
                         {isSelected ? (
@@ -213,124 +210,174 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu Collapsible */}
+      {/* Mobile Left White Drawer */}
       {mobileMenuOpen && (
-        <div className="mobile-dropdown-menu">
-          {/* User Account / Auth Card */}
-          {isAuthenticated ? (
-            <div className="mobile-user-card">
-              <div className="mobile-user-header">
-                <div className="mobile-user-avatar">👤</div>
-                <div className="mobile-user-details">
-                  <strong className="mobile-user-name">{user?.nom || 'Client 7 Shop'}</strong>
-                  <span className="mobile-user-email">{user?.email}</span>
-                </div>
-                {user?.role === 'ADMIN' && (
-                  <span className="mobile-admin-badge">ADMIN</span>
+        <div className="mobile-drawer-overlay" onClick={() => setMobileMenuOpen(false)}>
+          <div className="mobile-left-drawer" onClick={(e) => e.stopPropagation()}>
+            {/* 1. Drawer Header */}
+            <div className="drawer-header-dark">
+              <Link to="/" className="drawer-brand" onClick={() => setMobileMenuOpen(false)}>
+                {siteConfig?.logoUrl ? (
+                  <img 
+                    src={siteConfig.logoUrl} 
+                    alt={siteConfig.brandName || 'Logo'} 
+                    className="drawer-brand-img"
+                  />
+                ) : (
+                  <div className="drawer-brand-badge">{siteConfig?.brandBadge || '7'}</div>
                 )}
-              </div>
-              <div className="mobile-user-links">
-                <Link 
-                  to="/orders" 
-                  className="mobile-sublink-btn"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <span>📦 Mes Commandes & Suivi</span>
-                  <span>›</span>
-                </Link>
-                {user?.role === 'ADMIN' && (
+                <div className="drawer-brand-text">
+                  <span className="drawer-brand-name">{siteConfig?.brandName || '7 SHOP'}</span>
+                  <span className="drawer-brand-tag">Boutique Officielle</span>
+                </div>
+              </Link>
+              <button 
+                className="drawer-close-btn"
+                onClick={() => setMobileMenuOpen(false)}
+                aria-label="Fermer le menu"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* 2. Drawer Body (Scrollable) */}
+            <div className="drawer-body-dark">
+              {/* Navigation Links */}
+              <div className="drawer-section">
+                <span className="drawer-section-title">Navigation</span>
+                <nav className="drawer-nav-list">
                   <Link 
-                    to="/admin" 
-                    className="mobile-sublink-btn admin-highlight"
+                    to="/" 
+                    className={`drawer-nav-link ${location.pathname === '/' ? 'active' : ''}`}
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    <span>🛡️ Panneau d'Administration</span>
-                    <span>›</span>
+                    <span className="drawer-link-icon">🛍️</span>
+                    <span className="drawer-link-text">Boutique & Accueil</span>
+                    <span className="drawer-link-chevron">›</span>
                   </Link>
-                )}
-                <button 
-                  onClick={() => { logout(); setMobileMenuOpen(false); }}
-                  className="mobile-logout-btn"
-                >
-                  🚪 Déconnexion du compte
-                </button>
+
+                  <Link 
+                    to={isAuthenticated ? "/orders" : "/login?redirect=orders"} 
+                    className={`drawer-nav-link ${location.pathname === '/orders' ? 'active' : ''}`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <span className="drawer-link-icon">📦</span>
+                    <span className="drawer-link-text">Mes Commandes & Suivi</span>
+                    <span className="drawer-link-chevron">›</span>
+                  </Link>
+
+                  <button 
+                    type="button"
+                    className="drawer-nav-link drawer-cart-link"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      openDrawer();
+                    }}
+                  >
+                    <span className="drawer-link-icon">🛒</span>
+                    <span className="drawer-link-text">Mon Panier</span>
+                    <span className="drawer-cart-badge">{cartCount}</span>
+                  </button>
+
+                  {isAuthenticated && user?.role === 'ADMIN' && (
+                    <Link 
+                      to="/admin" 
+                      className={`drawer-nav-link admin-glow ${location.pathname.startsWith('/admin') ? 'active' : ''}`}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <span className="drawer-link-icon">🛡️</span>
+                      <span className="drawer-link-text">Espace Administration</span>
+                      <span className="drawer-admin-pill">ADMIN</span>
+                    </Link>
+                  )}
+                </nav>
+              </div>
+
+              {/* Marchés Switcher */}
+              <div className="drawer-section">
+                <div className="drawer-section-header-row">
+                  <span className="drawer-section-title">🏪 Marché</span>
+                  <span className="drawer-section-hint">Changer de marché</span>
+                </div>
+                <div className="drawer-markets-list">
+                  {visibleMarkets.map((market) => {
+                    const isSelected = market.id === activeMarketId;
+                    return (
+                      <button
+                        key={market.id}
+                        type="button"
+                        onClick={() => {
+                          switchMarket(market.id);
+                          setMobileMenuOpen(false);
+                        }}
+                        className={`drawer-market-chip ${isSelected ? 'active' : ''}`}
+                        style={isSelected ? { 
+                          borderColor: market.couleurPrimaire || '#0066ff', 
+                          background: `${market.couleurPrimaire || '#0066ff'}12`,
+                          color: market.couleurPrimaire || '#0066ff'
+                        } : {}}
+                      >
+                        <span className="drawer-market-icon">{market.icone || '🏬'}</span>
+                        <div className="drawer-market-info">
+                          <strong className="drawer-market-name">{market.nom}</strong>
+                          <span className="drawer-market-count">{market.products?.length || 0} articles</span>
+                        </div>
+                        {isSelected && <span className="drawer-market-active-dot">✓ Actif</span>}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
-          ) : (
-            <div className="mobile-auth-card">
-              <p className="mobile-auth-prompt">
-                Connectez-vous pour passer vos commandes et suivre vos livraisons.
-              </p>
-              <Link 
-                to="/login"
-                className="mobile-login-btn"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                🔐 Se Connecter / S'inscrire
-              </Link>
-            </div>
-          )}
 
-          {/* Navigation Links */}
-          <div className="mobile-nav-links">
-            <Link 
-              to="/" 
-              className={`mobile-nav-item ${location.pathname === '/' ? 'active' : ''}`}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <span>🛍️ Boutique Complète</span>
-              <span>›</span>
-            </Link>
-            <a 
-              href="#catalogue" 
-              className="mobile-nav-item"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <span>📂 Rayons & Articles ({activeMarket?.categories?.length || 0})</span>
-              <span>›</span>
-            </a>
-            <Link 
-              to={isAuthenticated ? "/orders" : "/login"} 
-              className={`mobile-nav-item ${location.pathname === '/orders' ? 'active' : ''}`}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <span>📦 Suivi de Commande</span>
-              <span>›</span>
-            </Link>
-          </div>
-          
-          {/* Market Switcher Section in Mobile Menu */}
-          <div className="mobile-markets-section">
-            <div className="mobile-markets-title">
-              <span>🏪</span> Changer de Marché / Univers :
-            </div>
-            <div className="mobile-markets-grid">
-              {visibleMarkets.map((market) => {
-                const isSelected = market.id === activeMarketId;
-                return (
-                  <button
-                    key={market.id}
-                    type="button"
-                    onClick={() => {
-                      switchMarket(market.id);
-                      setMobileMenuOpen(false);
-                    }}
-                    className={`mobile-market-btn ${isSelected ? 'active' : ''}`}
-                    style={isSelected ? { 
-                      borderColor: market.couleurPrimaire || '#0066ff', 
-                      backgroundColor: `${market.couleurPrimaire || '#0066ff'}15`,
-                      color: market.couleurPrimaire || '#0066ff'
-                    } : {}}
-                  >
-                    <span className="market-btn-icon">{market.icone || '🏬'}</span>
-                    <div className="market-btn-text">
-                      <strong className="market-btn-name">{market.nom}</strong>
-                      <span className="market-btn-sub">{market.categories?.length || 0} rayons disponibles</span>
+            {/* 3. Drawer Bottom Footer (User info or Login button) */}
+            <div className="drawer-footer-dark">
+              {isAuthenticated ? (
+                <div className="drawer-user-profile-box">
+                  <div className="drawer-user-info-row">
+                    <div className="drawer-user-avatar-circle">
+                      👤
                     </div>
-                    {isSelected && <span className="mobile-market-active-dot">✓ Actif</span>}
-                  </button>
-                );
-              })}
+                    <div className="drawer-user-text-meta">
+                      <span className="drawer-user-greeting">Connecté en tant que</span>
+                      <strong className="drawer-user-fullname" title={user?.nom || user?.email}>
+                        {user?.nom || user?.prenom || user?.email || 'Client 7 Shop'}
+                      </strong>
+                      <span className="drawer-user-email-text">{user?.email}</span>
+                    </div>
+                  </div>
+                  <div className="drawer-user-actions-row">
+                    <Link 
+                      to="/orders" 
+                      className="drawer-btn-orders-quick"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      📦 Commandes
+                    </Link>
+                    <button 
+                      onClick={() => { logout(); setMobileMenuOpen(false); }}
+                      className="drawer-btn-logout"
+                      title="Se déconnecter"
+                    >
+                      🚪 Déconnexion
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="drawer-auth-bottom-box">
+                  <p className="drawer-auth-pitch">
+                    Connectez-vous pour passer commande et suivre vos livraisons.
+                  </p>
+                  <Link 
+                    to="/login"
+                    className="drawer-btn-login"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <span>🔐 Se Connecter / S'inscrire</span>
+                    <span>›</span>
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>

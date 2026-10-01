@@ -20,7 +20,7 @@ export default function ProductModal({ product, onClose }) {
 
   const categoryName = typeof product?.category === 'object' && product?.category 
     ? product.category.nom 
-    : (product?.category || 'Rayon 7 Shop');
+    : (product?.category || 'Article 7 Shop');
   
   const [selectedColor, setSelectedColor] = useState(colorsList[0] || 'Standard');
   const [selectedSize, setSelectedSize] = useState(sizesList[0] || 'Unique');
@@ -101,24 +101,7 @@ export default function ProductModal({ product, onClose }) {
             </div>
           )}
 
-          {/* 3 Mini Trust Cards */}
-          <div className="modal-trust-cards">
-            <div className="mini-trust-card">
-              <div className="trust-ico">🚚</div>
-              <h6>Livraison Rapide</h6>
-              <span>Partout</span>
-            </div>
-            <div className="mini-trust-card">
-              <div className="trust-ico">🔄</div>
-              <h6>30 Jours</h6>
-              <span>Retours simples</span>
-            </div>
-            <div className="mini-trust-card">
-              <div className="trust-ico">🛡️</div>
-              <h6>7 Shop Certifié</h6>
-              <span>Qualité garantie</span>
-            </div>
-          </div>
+
         </div>
 
         {/* RIGHT COLUMN: Details & Action */}

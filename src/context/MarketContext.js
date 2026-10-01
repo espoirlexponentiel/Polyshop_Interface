@@ -20,8 +20,20 @@ export function MarketProvider({ children }) {
     } catch (e) {
       console.error('Error loading active market from storage:', e);
     }
-    return 'vestimentaire';
+    return null;
   });
+
+  // Helper pour identifier le marché de référence / par défaut (Mode & Vestimentaire)
+  const isDefaultFlagshipMarket = useCallback((m) => {
+    if (!m) return false;
+    if (m.isDefault === true || m.isDefaultRoot === true) return true;
+    const idStr = String(m.id || '').toLowerCase();
+    const slugStr = String(m.slug || '').toLowerCase();
+    const nomStr = String(m.nom || '').toLowerCase();
+    return idStr === 'vestimentaire' || idStr === 'mode' || idStr === 'mode-vestimentaire' ||
+           slugStr === 'vestimentaire' || slugStr === 'mode' || slugStr === 'mode-vestimentaire' ||
+           nomStr.includes('mode') || nomStr.includes('vestimentaire');
+  }, []);
 
   // Helper to normalize DB product entity
   const normalizeProduct = useCallback((p) => {
@@ -54,26 +66,36 @@ export function MarketProvider({ children }) {
     };
   }, []);
 
-  // Fetch all data from Spring Boot Backend (Markets, Categories, Products)
+  // Fetch all data from Spring Boot Backend in parallel with resilient error handling
   const fetchAllData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      // 1. Fetch Markets
-      const marketsRes = await axios.get('/markets');
+      const [marketsRes, categoriesRes, productsRes] = await Promise.all([
+        axios.get('/markets').catch(err => {
+          console.warn('⚠️ /markets request issue:', err);
+          return { data: [] };
+        }),
+        axios.get('/categories').catch(err => {
+          console.warn('⚠️ /categories request issue:', err);
+          return { data: [] };
+        }),
+        axios.get('/products').catch(err => {
+          console.warn('⚠️ /products request issue:', err);
+          return { data: [] };
+        })
+      ]);
+
       const rawMarkets = Array.isArray(marketsRes.data) ? marketsRes.data : [];
-      setDbMarkets(rawMarkets);
-
-      // 2. Fetch Categories
-      const categoriesRes = await axios.get('/categories');
       const rawCategories = Array.isArray(categoriesRes.data) ? categoriesRes.data : [];
-      setDbCategories(rawCategories);
-
-      // 3. Fetch Products
-      const productsRes = await axios.get('/products');
       const rawProducts = Array.isArray(productsRes.data) ? productsRes.data : (productsRes.data?.value || []);
-      const normalizedProducts = rawProducts.map(normalizeProduct);
-      setDbProducts(normalizedProducts);
+
+      if (rawMarkets.length > 0) setDbMarkets(rawMarkets);
+      if (rawCategories.length > 0) setDbCategories(rawCategories);
+      if (rawProducts.length > 0) {
+        const normalized = rawProducts.map(normalizeProduct);
+        setDbProducts(normalized);
+      }
 
     } catch (err) {
       console.error('❌ Erreur lors du chargement des articles :', err);
@@ -89,11 +111,12 @@ export function MarketProvider({ children }) {
   }, [fetchAllData]);
 
   // Combined markets structure (Database first, or DEFAULT_MARKETS fallback if DB is empty)
-  const markets = (dbMarkets.length > 0 ? dbMarkets : DEFAULT_MARKETS).map(m => {
+  const baseMarkets = dbMarkets.length > 0 ? dbMarkets : DEFAULT_MARKETS;
+  const rawMarketsList = baseMarkets.map(m => {
     // Categories for this market from DB
     const marketDbCats = dbCategories.filter(c => {
       const catMarketId = c.market?.id || c.marketId || (typeof c.market === 'string' ? c.market : null);
-      return catMarketId === m.id;
+      return catMarketId && String(catMarketId).trim().toLowerCase() === String(m.id).trim().toLowerCase();
     });
 
     // Also extract categories from m.categories if provided
@@ -105,11 +128,29 @@ export function MarketProvider({ children }) {
     // Extract ONLY pure string names for `categories` array
     const namesFromDb = marketDbCats.map(c => (typeof c === 'string' ? c : (c.nom || c.name || ''))).filter(Boolean);
     const namesFromRaw = rawMarketCats.map(c => (typeof c === 'string' ? c : (c.nom || c.name || ''))).filter(Boolean);
-    
-    const combinedCategoryNames = Array.from(new Set([...namesFromDb, ...namesFromRaw]));
 
-    // Products for this market from DB
-    const marketProducts = dbProducts.filter(p => (p.marketId === m.id || p.categoryObj?.market?.id === m.id));
+    // Products for this market from DB or fallback
+    let marketProducts = dbProducts.filter(p => {
+      const pMarketId = String(p.marketId || p.categoryObj?.market?.id || (typeof p.category === 'object' ? p.category?.market?.id : '') || '').trim().toLowerCase();
+      const mId = String(m.id || '').trim().toLowerCase();
+      const mSlug = String(m.slug || '').trim().toLowerCase();
+      if (pMarketId === mId || (mSlug && pMarketId === mSlug)) return true;
+      if (!pMarketId && isDefaultFlagshipMarket(m)) return true;
+      return false;
+    });
+
+    // If dbProducts is not yet loaded or empty for this default market, use default market fallback products
+    if (marketProducts.length === 0 && Array.isArray(m.products) && m.products.length > 0) {
+      marketProducts = m.products.map(normalizeProduct);
+    }
+
+    // Also extract categories from products
+    const namesFromProds = marketProducts.map(p => {
+      if (typeof p.category === 'object' && p.category) return p.category.nom || p.category.name;
+      return p.category;
+    }).filter(Boolean);
+
+    const combinedCategoryNames = Array.from(new Set([...namesFromDb, ...namesFromRaw, ...namesFromProds]));
 
     return {
       ...m,
@@ -119,20 +160,31 @@ export function MarketProvider({ children }) {
     };
   });
 
+  // Tri des marchés : Le marché de référence (Mode & Vestimentaire) est TOUJOURS placé en 1ère position
+  const markets = [...rawMarketsList].sort((a, b) => {
+    const isDefA = isDefaultFlagshipMarket(a);
+    const isDefB = isDefaultFlagshipMarket(b);
+    if (isDefA && !isDefB) return -1;
+    if (!isDefA && isDefB) return 1;
+    return 0;
+  });
+
   // Active Market Object & Visible Markets
   const visibleMarkets = markets.filter(m => m.isActive !== false);
-  const activeMarket = visibleMarkets.find(m => m.id === activeMarketId) || markets.find(m => m.id === activeMarketId) || visibleMarkets[0] || markets[0] || DEFAULT_MARKETS[0];
 
-  // Save active market ID
-  useEffect(() => {
-    if (activeMarket?.id) {
-      try {
-        localStorage.setItem(STORAGE_KEY_ACTIVE, activeMarket.id);
-      } catch (e) {
-        console.error('Error saving active market ID:', e);
-      }
-    }
-  }, [activeMarket]);
+  // Détermination du marché par défaut
+  const defaultMarket = visibleMarkets.find(isDefaultFlagshipMarket) 
+    || markets.find(isDefaultFlagshipMarket) 
+    || visibleMarkets[0] 
+    || markets[0] 
+    || DEFAULT_MARKETS[0];
+
+  // Résolution du marché actif : s'il a été explicitement choisi et existe, on le garde ; sinon on reste sur le marché par défaut
+  const explicitlyChosenMarket = activeMarketId 
+    ? (visibleMarkets.find(m => m.id === activeMarketId) || markets.find(m => m.id === activeMarketId))
+    : null;
+
+  const activeMarket = explicitlyChosenMarket || defaultMarket;
 
   // Dynamic Theme CSS Variables Injection
   useEffect(() => {
@@ -144,10 +196,16 @@ export function MarketProvider({ children }) {
     document.body.dataset.market = activeMarket.id;
   }, [activeMarket]);
 
-  // Switch Market
+  // Switch Market (Enregistre le choix explicite de l'utilisateur)
   const switchMarket = (marketId) => {
-    if (markets.some(m => m.id === marketId)) {
-      setActiveMarketId(marketId);
+    const target = markets.find(m => m.id === marketId);
+    if (target) {
+      setActiveMarketId(target.id);
+      try {
+        localStorage.setItem(STORAGE_KEY_ACTIVE, target.id);
+      } catch (e) {
+        console.error('Error saving active market ID:', e);
+      }
     }
   };
 

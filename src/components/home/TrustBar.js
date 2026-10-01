@@ -13,13 +13,8 @@ export default function TrustBar() {
       desc: "Mobile Money (T-Money & Flooz)"
     },
     {
-      icon: "🔄",
-      title: "Retours 30J",
-      desc: "Échanges & Retours Gratuits"
-    },
-    {
       icon: "✨",
-      title: "Qualité 7 Shop",
+      title: "Qualité PolyShop",
       desc: "Matières Premium Certifiées"
     }
   ];

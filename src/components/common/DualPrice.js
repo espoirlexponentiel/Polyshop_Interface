@@ -1,10 +1,10 @@
 import React from 'react';
-import { formatFCFA, formatEuro } from '../../utils/priceUtils';
+import { formatFCFA } from '../../utils/priceUtils';
 
 /**
  * Composant d'affichage des prix :
  * - Prix principal en FCFA (grand et bien visible)
- * - Prix indicatif en Euro (en bas, tout petit et discret)
+ * - Ancien prix barré en FCFA si réduction
  */
 export default function DualPrice({ 
   price, 
@@ -19,7 +19,6 @@ export default function DualPrice({
   const isExtraLarge = size === 'xl';
 
   const mainFontSize = isExtraLarge ? '1.75rem' : isLarge ? '1.45rem' : isSmall ? '0.92rem' : '1.1rem';
-  const subFontSize = isExtraLarge ? '0.82rem' : isLarge ? '0.78rem' : isSmall ? '0.68rem' : '0.72rem';
 
   return (
     <div className={`dual-price-box ${className}`} style={{ textAlign: align }}>
@@ -42,31 +41,13 @@ export default function DualPrice({
         
         {oldPrice && Number(oldPrice) > Number(price) && (
           <span style={{ 
-            fontSize: isLarge ? '0.95rem' : isSmall ? '0.75rem' : '0.82rem', 
+            fontSize: isLarge ? '0.92rem' : isSmall ? '0.72rem' : '0.80rem', 
             color: '#94a3b8', 
+            opacity: 0.65,
             textDecoration: 'line-through',
-            fontWeight: '600'
+            fontWeight: '500'
           }}>
             {formatFCFA(oldPrice)}
-          </span>
-        )}
-      </div>
-
-      {/* Ligne secondaire en Euro (petit en bas) */}
-      <div style={{ 
-        fontSize: subFontSize, 
-        color: '#64748b', 
-        fontWeight: '600',
-        marginTop: '1px',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '6px',
-        justifyContent: align === 'center' ? 'center' : align === 'right' ? 'flex-end' : 'flex-start'
-      }}>
-        <span>~ {formatEuro(price)}</span>
-        {oldPrice && Number(oldPrice) > Number(price) && (
-          <span style={{ textDecoration: 'line-through', opacity: 0.6 }}>
-            {formatEuro(oldPrice)}
           </span>
         )}
       </div>
