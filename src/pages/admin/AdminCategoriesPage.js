@@ -57,10 +57,10 @@ export default function AdminCategoriesPage() {
   return (
     <div className="admin-categories-root">
       {/* Top Selector by Market */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
-        <div>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0f172a' }}>Catégories & Rayons</h2>
-          <p style={{ fontSize: '0.85rem', color: '#64748b' }}>Gérez les classifications d'articles pour chaque marché de la plateforme.</p>
+      <div className="admin-categories-header">
+        <div className="admin-categories-header-text">
+          <h2>Catégories & Rayons</h2>
+          <p>Gérez les classifications d'articles pour chaque marché de la plateforme.</p>
         </div>
 
         {/* Market Selector Pill Tabs */}
@@ -69,20 +69,10 @@ export default function AdminCategoriesPage() {
             <button
               key={m.id}
               onClick={() => setSelectedMarketId(m.id)}
+              className="admin-cat-market-tab"
               style={{
-                padding: '8px 16px',
-                borderRadius: '9999px',
-                border: '1px solid #cbd5e1',
                 background: selectedMarketId === m.id ? m.couleurPrimaire || '#0066ff' : '#ffffff',
-                color: selectedMarketId === m.id ? '#ffffff' : '#334155',
-                fontWeight: '700',
-                fontSize: '0.88rem',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                whiteSpace: 'nowrap',
-                flexShrink: 0
+                color: selectedMarketId === m.id ? '#ffffff' : '#334155'
               }}
             >
               <span>{m.icone || '🏬'}</span>
@@ -96,12 +86,12 @@ export default function AdminCategoriesPage() {
       <div className="admin-categories-grid">
         
         {/* Left: Add New Category Form */}
-        <div className="admin-card-panel">
+        <div className="admin-card-panel admin-cat-form-panel">
           <div className="admin-card-header">
             <h3><span>➕</span> Ajouter un Rayon</h3>
           </div>
 
-          <form onSubmit={handleAddCategory} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <form onSubmit={handleAddCategory} className="admin-cat-form">
             <div className="form-group-admin">
               <label>Marché Cible</label>
               <input 
@@ -136,14 +126,14 @@ export default function AdminCategoriesPage() {
               />
             </div>
 
-            <button type="submit" className="btn-admin-primary" style={{ marginTop: '8px' }}>
+            <button type="submit" className="btn-admin-primary admin-btn-submit-cat">
               Ajouter au Marché {currentMarket?.nom}
             </button>
           </form>
         </div>
 
         {/* Right: Categories Table */}
-        <div className="admin-card-panel">
+        <div className="admin-card-panel admin-cat-list-panel">
           <div className="admin-card-header">
             <h3>
               <span>{currentMarket?.icone || '📂'}</span> Rayons de {currentMarket?.nom} ({categoriesRaw.length})
@@ -151,20 +141,20 @@ export default function AdminCategoriesPage() {
           </div>
 
           <div className="admin-table-wrap">
-            <table className="admin-data-table">
+            <table className="admin-data-table admin-cat-data-table">
               <thead>
                 <tr>
-                  <th>#</th>
+                  <th style={{ width: '40px' }}>#</th>
                   <th>Nom du Rayon</th>
-                  <th>Produits Associés</th>
-                  <th style={{ textAlign: 'right' }}>Actions</th>
+                  <th>Produits</th>
+                  <th style={{ textAlign: 'right', width: '120px' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {categoriesRaw.length === 0 ? (
                   <tr>
                     <td colSpan="4" style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>
-                      Aucun rayon enregistré pour ce marché. Ajoutez votre premier rayon à gauche !
+                      Aucun rayon enregistré pour ce marché. Ajoutez votre premier rayon ci-dessus !
                     </td>
                   </tr>
                 ) : (
@@ -181,31 +171,26 @@ export default function AdminCategoriesPage() {
                       <tr key={catId || idx}>
                         <td style={{ color: '#94a3b8', fontWeight: '700' }}>{idx + 1}</td>
                         <td>
-                          <strong style={{ fontSize: '0.95rem', color: '#0f172a' }}>{catName}</strong>
+                          <strong className="admin-cat-row-title">{catName}</strong>
                           {typeof cat === 'object' && cat?.description && (
-                            <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '2px' }}>
+                            <div className="admin-cat-row-desc">
                               {cat.description}
                             </div>
                           )}
                         </td>
                         <td>
-                          <span style={{
-                            padding: '3px 10px',
+                          <span className="admin-cat-count-badge" style={{
                             background: count > 0 ? '#dbeafe' : '#f1f5f9',
-                            color: count > 0 ? '#1e40af' : '#64748b',
-                            borderRadius: '9999px',
-                            fontWeight: '800',
-                            fontSize: '0.78rem'
+                            color: count > 0 ? '#1e40af' : '#64748b'
                           }}>
-                            {count} article{count > 1 ? 's' : ''}
+                            {count} {count > 1 ? 'articles' : 'article'}
                           </span>
                         </td>
                         <td style={{ textAlign: 'right' }}>
-                          <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                          <div className="admin-cat-row-actions">
                             <button
                               onClick={() => handleOpenEdit(cat)}
                               className="btn-admin-edit"
-                              style={{ padding: '6px 12px' }}
                             >
                               Éditer
                             </button>
@@ -216,7 +201,7 @@ export default function AdminCategoriesPage() {
                                 }
                               }}
                               className="btn-admin-danger"
-                              style={{ padding: '6px 10px' }}
+                              title="Supprimer ce rayon"
                             >
                               🗑️
                             </button>

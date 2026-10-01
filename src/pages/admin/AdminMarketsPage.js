@@ -162,29 +162,20 @@ export default function AdminMarketsPage() {
 
               <div className="market-card-body">
                 {/* Visibilité Status Badge */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: isVisible ? '#f0fdf4' : '#f8fafc', borderRadius: '8px', border: `1px solid ${isVisible ? '#bbf7d0' : '#e2e8f0'}`, marginBottom: '12px' }}>
-                  <span style={{ fontSize: '0.8rem', fontWeight: '800', color: isVisible ? '#166534' : '#64748b', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    {isVisible ? '🟢 Visible aux clients' : '👁️ Masqué aux clients'}
+                <div className={`market-visibility-row ${isVisible ? 'visible-active' : 'visible-hidden'}`}>
+                  <span className="market-visibility-text">
+                    {isVisible ? '🟢 Visible' : '👁️ Masqué'}
                   </span>
                   <button
                     onClick={() => toggleMarketVisibility(market.id)}
-                    style={{
-                      padding: '4px 10px',
-                      fontSize: '0.75rem',
-                      fontWeight: '700',
-                      borderRadius: '6px',
-                      border: '1px solid #cbd5e1',
-                      background: '#ffffff',
-                      cursor: 'pointer',
-                      color: isVisible ? '#dc2626' : '#16a34a'
-                    }}
+                    className="market-visibility-btn"
                   >
-                    {isVisible ? 'Masquer' : 'Rendre Visible'}
+                    {isVisible ? 'Masquer' : 'Afficher'}
                   </button>
                 </div>
 
                 <div className="market-detail-row">
-                  <span className="market-detail-label">Couleur Dominante :</span>
+                  <span className="market-detail-label">Dominante :</span>
                   <div className="market-color-sample">
                     <span className="color-swatch-box" style={{ backgroundColor: market.couleurPrimaire }}></span>
                     <span>{market.couleurPrimaire}</span>
@@ -192,7 +183,7 @@ export default function AdminMarketsPage() {
                 </div>
 
                 <div className="market-detail-row">
-                  <span className="market-detail-label">Couleur d'Accent :</span>
+                  <span className="market-detail-label">Accent :</span>
                   <div className="market-color-sample">
                     <span className="color-swatch-box" style={{ backgroundColor: market.couleurAccent }}></span>
                     <span>{market.couleurAccent}</span>
@@ -200,19 +191,19 @@ export default function AdminMarketsPage() {
                 </div>
 
                 <div className="market-detail-row">
-                  <span className="market-detail-label">Rayons / Catégories :</span>
-                  <span style={{ fontWeight: '700', color: '#0f172a' }}>{market.categories?.length || 0} rayon(s)</span>
+                  <span className="market-detail-label">Rayons :</span>
+                  <span className="market-detail-val">{market.categories?.length || 0} rayon(s)</span>
                 </div>
 
                 <div className="market-detail-row">
-                  <span className="market-detail-label">Produits Associés :</span>
-                  <span style={{ fontWeight: '700', color: '#0f172a' }}>{market.products?.length || 0} article(s)</span>
+                  <span className="market-detail-label">Articles :</span>
+                  <span className="market-detail-val">{market.products?.length || 0} article(s)</span>
                 </div>
 
-                <div className="market-detail-row">
-                  <span className="market-detail-label">Dimensions Visuel :</span>
-                  <span style={{ fontWeight: '700', color: '#0369a1', fontSize: '0.8rem', background: '#f0f9ff', padding: '2px 6px', borderRadius: '4px' }}>
-                    📐 {market.heroImageWidth || '480px'} × {market.heroImageHeight || '500px'} ({market.heroImageObjectFit || 'contain'})
+                <div className="market-detail-row market-dimensions-row">
+                  <span className="market-detail-label">Visuel :</span>
+                  <span className="market-dimension-badge">
+                    {market.heroImageWidth || '480px'} × {market.heroImageHeight || '500px'}
                   </span>
                 </div>
 
@@ -236,22 +227,12 @@ export default function AdminMarketsPage() {
                   className="btn-admin-edit"
                   style={{ flex: 1 }}
                 >
-                  ✏️ Modifier Thème & Textes
+                  ✏️ Modifier
                 </button>
 
                 {isDefaultRoot ? (
                   <span 
-                    style={{
-                      padding: '8px 12px',
-                      background: '#f1f5f9',
-                      color: '#475569',
-                      borderRadius: '8px',
-                      fontSize: '0.75rem',
-                      fontWeight: '800',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px'
-                    }}
+                    className="market-protected-badge"
                     title="Le marché par défaut (Mode & Vestimentaire) ne peut pas être supprimé"
                   >
                     🔒 Protégé

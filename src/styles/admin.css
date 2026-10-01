@@ -417,6 +417,86 @@
   gap: 10px;
 }
 
+.market-visibility-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.market-visibility-row.visible-active {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+
+.market-visibility-row.visible-hidden {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.market-visibility-text {
+  font-size: 0.8rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.market-visibility-row.visible-active .market-visibility-text {
+  color: #166534;
+}
+
+.market-visibility-row.visible-hidden .market-visibility-text {
+  color: #64748b;
+}
+
+.market-visibility-btn {
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.market-visibility-row.visible-active .market-visibility-btn {
+  color: #dc2626;
+}
+
+.market-visibility-row.visible-hidden .market-visibility-btn {
+  color: #16a34a;
+}
+
+.market-detail-val {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.market-dimension-badge {
+  font-weight: 700;
+  color: #0369a1;
+  font-size: 0.8rem;
+  background: #f0f9ff;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.market-protected-badge {
+  padding: 8px 12px;
+  background: #f1f5f9;
+  color: #475569;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 /* ---------- 6. ADMIN TABLES (PRODUCTS, ORDERS, CATEGORIES) ---------- */
 .admin-table-wrap {
   width: 100%;
@@ -928,11 +1008,107 @@
   display: none;
 }
 
-/* Categories Grid */
+/* Categories Page Base Styles */
+.admin-categories-root {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-categories-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.admin-categories-header-text h2 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.admin-categories-header-text p {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.admin-cat-market-tab {
+  padding: 8px 16px;
+  border-radius: 9999px;
+  border: 1px solid #cbd5e1;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
 .admin-categories-grid {
   display: grid;
   grid-template-columns: 360px 1fr;
   gap: 24px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-cat-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-btn-submit-cat {
+  margin-top: 8px;
+  width: 100%;
+}
+
+.admin-cat-data-table {
+  width: 100%;
+}
+
+.admin-cat-row-title {
+  font-size: 0.95rem;
+  color: #0f172a;
+  display: block;
+}
+
+.admin-cat-row-desc {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.admin-cat-count-badge {
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-weight: 800;
+  font-size: 0.78rem;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.admin-cat-row-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.admin-cat-row-actions .btn-admin-edit {
+  padding: 6px 12px;
+}
+
+.admin-cat-row-actions .btn-admin-danger {
+  padding: 6px 10px;
 }
 
 /* Customer Info Grid in Modal */
@@ -981,12 +1157,20 @@
   }
 
   .admin-categories-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
+    gap: 20px;
   }
 }
 
 /* Smartphones (<= 768px) - Clean, aesthetic, uncluttered app-like layout */
 @media (max-width: 768px) {
+  /* Root & Containment */
+  .admin-main-content {
+    width: 100% !important;
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+  }
+
   /* Topbar Mobile Uncluttered */
   .admin-topbar {
     padding: 12px 14px;
@@ -1007,67 +1191,358 @@
   }
 
   .admin-body-container {
-    padding: 12px;
+    padding: 10px;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   /* 4 KPI Cards: Côte à côte (2x2 grid) sur smartphone */
   .stats-grid-row {
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 10px !important;
-    margin-bottom: 16px !important;
+    gap: 8px !important;
+    margin-bottom: 14px !important;
   }
 
   .kpi-card {
-    padding: 12px 12px !important;
+    padding: 10px 10px !important;
     border-radius: 12px !important;
     flex-direction: column !important;
     align-items: flex-start !important;
-    gap: 8px !important;
+    gap: 6px !important;
     position: relative;
   }
 
   .kpi-label {
-    font-size: 0.66rem !important;
+    font-size: 0.64rem !important;
     margin-bottom: 2px !important;
   }
 
   .kpi-value {
-    font-size: 1.15rem !important;
+    font-size: 1.10rem !important;
     font-weight: 900 !important;
     word-break: break-word;
   }
 
   .kpi-subtext {
-    font-size: 0.68rem !important;
+    font-size: 0.65rem !important;
     margin-top: 2px !important;
   }
 
   .kpi-icon-box {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 32px !important;
-    height: 32px !important;
-    font-size: 1rem !important;
+    top: 8px;
+    right: 8px;
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 0.9rem !important;
     border-radius: 8px !important;
   }
 
-  /* Scroll horizontal fluide des cartes marchés sur smartphone */
+  /* ------------------------------------------------------------
+     1. MARCHÉS SUR SMARTPHONE (GRILLE 2 COLONNES)
+     ------------------------------------------------------------ */
+  .markets-admin-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .market-admin-card {
+    border-radius: 12px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .market-card-topbar {
+    padding: 8px 10px !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 6px !important;
+  }
+
+  .market-card-title-group {
+    gap: 6px !important;
+    width: 100% !important;
+  }
+
+  .market-card-title-group span {
+    font-size: 1.15rem !important;
+  }
+
+  .market-card-title-group h3 {
+    font-size: 0.82rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 100px !important;
+  }
+
+  .market-card-title-group span:last-child {
+    display: none !important;
+  }
+
+  .market-card-body {
+    padding: 8px 6px !important;
+    gap: 6px !important;
+  }
+
+  .market-visibility-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 4px !important;
+    padding: 4px 6px !important;
+    margin-bottom: 6px !important;
+    border-radius: 6px !important;
+  }
+
+  .market-visibility-text {
+    font-size: 0.65rem !important;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .market-visibility-btn {
+    width: 100% !important;
+    font-size: 0.65rem !important;
+    padding: 2px 4px !important;
+  }
+
+  .market-detail-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1px !important;
+    font-size: 0.68rem !important;
+  }
+
+  .market-detail-label {
+    font-size: 0.62rem !important;
+  }
+
+  .market-detail-val {
+    font-size: 0.68rem !important;
+  }
+
+  .market-dimensions-row {
+    display: none !important; /* Masquer dimensions pixels pour aérer la carte 2 col */
+  }
+
+  .market-color-sample {
+    font-size: 0.65rem !important;
+    gap: 4px !important;
+  }
+
+  .color-swatch-box {
+    width: 12px !important;
+    height: 12px !important;
+  }
+
+  .market-hero-preview-box {
+    flex-direction: column !important;
+    align-items: center !important;
+    padding: 4px !important;
+    gap: 4px !important;
+    border-radius: 8px !important;
+  }
+
+  .market-hero-thumb {
+    width: 100% !important;
+    height: 44px !important;
+    object-fit: contain !important;
+  }
+
+  .market-hero-preview-text {
+    width: 100% !important;
+    text-align: center !important;
+  }
+
+  .market-hero-preview-text h5 {
+    font-size: 0.68rem !important;
+    max-width: 100% !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .market-hero-preview-text p {
+    display: none !important;
+  }
+
+  .market-card-actions {
+    padding: 6px 6px !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+  }
+
+  .market-card-actions .btn-admin-edit,
+  .market-card-actions .btn-admin-danger,
+  .market-protected-badge {
+    width: 100% !important;
+    font-size: 0.68rem !important;
+    padding: 5px 4px !important;
+    text-align: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Répartition Marchés sur le Dashboard */
   .admin-markets-scroll-track {
-    display: flex !important;
-    flex-direction: row !important;
-    overflow-x: auto !important;
-    scroll-snap-type: x mandatory;
-    gap: 10px !important;
-    padding-bottom: 8px !important;
-    -webkit-overflow-scrolling: touch;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    overflow-x: visible !important;
+    width: 100% !important;
   }
 
   .admin-market-stat-item {
-    flex: 0 0 250px !important;
-    min-width: 240px !important;
-    scroll-snap-align: start;
-    padding: 12px !important;
+    flex: none !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    padding: 10px 8px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* ------------------------------------------------------------
+     2. PAGE CATÉGORIES & FORMULAIRE SUR SMARTPHONE
+     ------------------------------------------------------------ */
+  .admin-categories-root {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  .admin-categories-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .admin-categories-header-text h2 {
+    font-size: 1.10rem !important;
+  }
+
+  .admin-categories-header-text p {
+    font-size: 0.76rem !important;
+  }
+
+  .admin-filter-tabs-scroll {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    box-sizing: border-box !important;
+    padding-bottom: 6px !important;
+  }
+
+  .admin-cat-market-tab {
+    padding: 6px 12px !important;
+    font-size: 0.80rem !important;
+    flex-shrink: 0 !important;
+  }
+
+  .admin-categories-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    gap: 14px !important;
+    min-width: 0 !important;
+  }
+
+  .admin-cat-form-panel,
+  .admin-cat-list-panel,
+  .admin-card-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 14px 12px !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    border-radius: 14px !important;
+    margin-bottom: 12px;
+  }
+
+  .admin-card-header {
+    margin-bottom: 12px !important;
+    padding-bottom: 8px !important;
+  }
+
+  .admin-card-header h3 {
+    font-size: 0.95rem !important;
+  }
+
+  .admin-cat-form {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    gap: 12px !important;
+  }
+
+  .admin-btn-submit-cat {
+    width: 100% !important;
+    padding: 10px !important;
+    font-size: 0.84rem !important;
+    white-space: normal !important;
+    text-align: center !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Tableau des catégories sans coupure avec défilement tactile fluide */
+  .admin-table-wrap {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    display: block !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+  }
+
+  .admin-cat-data-table {
+    width: 100% !important;
+    min-width: 360px !important;
+    box-sizing: border-box !important;
+  }
+
+  .admin-cat-data-table th,
+  .admin-cat-data-table td {
+    padding: 8px 6px !important;
+    font-size: 0.78rem !important;
+  }
+
+  .admin-cat-row-title {
+    font-size: 0.85rem !important;
+  }
+
+  .admin-cat-row-desc {
+    font-size: 0.68rem !important;
+  }
+
+  .admin-cat-count-badge {
+    font-size: 0.68rem !important;
+    padding: 2px 6px !important;
+  }
+
+  .admin-cat-row-actions {
+    display: flex !important;
+    gap: 4px !important;
+    justify-content: flex-end !important;
+  }
+
+  .admin-cat-row-actions .btn-admin-edit {
+    padding: 4px 6px !important;
+    font-size: 0.70rem !important;
+  }
+
+  .admin-cat-row-actions .btn-admin-danger {
+    padding: 4px 6px !important;
+    font-size: 0.70rem !important;
   }
 
   /* Quick Actions 2 Colonnes sur Smartphone */
@@ -1081,28 +1556,12 @@
     font-size: 0.78rem !important;
   }
 
-  /* Panels & Cards */
-  .admin-card-panel {
-    padding: 14px !important;
-    border-radius: 14px !important;
-    margin-bottom: 16px;
-  }
-
-  .admin-card-header {
-    margin-bottom: 14px !important;
-    padding-bottom: 10px !important;
-  }
-
-  .admin-card-header h3 {
-    font-size: 0.98rem !important;
-  }
-
   /* Form & Actions bars */
   .admin-actions-bar {
     flex-direction: column;
     align-items: stretch;
     gap: 10px;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
   }
 
   .admin-filter-group {
@@ -1113,6 +1572,7 @@
 
   .admin-input, .admin-select {
     width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   /* Customer Info Grid in Modal */
@@ -1129,21 +1589,28 @@
   .admin-modal-box {
     border-radius: 16px;
     max-height: 94vh;
+    width: 100% !important;
+    max-width: calc(100vw - 20px) !important;
+    box-sizing: border-box !important;
   }
 
   .admin-modal-header {
-    padding: 14px 16px;
+    padding: 12px 14px;
   }
 
   .admin-modal-body {
-    padding: 14px 16px;
-    gap: 14px;
+    padding: 12px 14px;
+    gap: 12px;
   }
 
-  /* Markets Admin Cards Grid */
-  .markets-admin-grid {
-    grid-template-columns: 1fr !important;
-    gap: 14px !important;
+  .admin-modal-footer {
+    padding: 12px 14px;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .admin-modal-footer button {
+    width: 100%;
   }
 }
 
