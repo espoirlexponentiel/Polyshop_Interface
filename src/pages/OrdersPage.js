@@ -323,14 +323,6 @@ export default function OrdersPage() {
                 <div className="orders-stat-value" style={{ color: "#059669" }}>{stats.delivered}</div>
                 <span className="orders-stat-sub" style={{ color: "#059669" }}>✅ Réceptionnés</span>
               </div>
-
-              <div className="orders-stat-card">
-                <span className="orders-stat-label">Total Dépensé</span>
-                <div className="orders-stat-value">
-                  {formatFCFA(stats.totalSpent)}
-                </div>
-                <span className="orders-stat-sub" style={{ color: "#64748b" }}>Montant cumulé</span>
-              </div>
             </div>
 
             {/* 2. Les 3 Onglets de filtrage */}

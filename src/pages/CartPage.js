@@ -183,8 +183,8 @@ export default function CartPage() {
     <div>
       <Navbar />
 
-      <main style={{ maxWidth: '1200px', margin: '30px auto', padding: '0 24px' }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: '900', marginBottom: '24px', color: 'var(--color-dark)' }}>
+      <main className="cart-page-main">
+        <h1 className="cart-page-title">
           Mon Panier 🛍️
         </h1>
 
@@ -202,7 +202,7 @@ export default function CartPage() {
         ) : (
           <div className="cart-page-main-grid">
             {/* Left: Items list */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            <div className="cart-items-list">
               {cartItems.map((item) => {
                 const maxStock = item.stock !== undefined && item.stock !== null ? Number(item.stock) : 99;
                 const isOverStock = item.quantity > maxStock;
@@ -210,40 +210,31 @@ export default function CartPage() {
                 return (
                   <div 
                     key={item.cartItemId}
-                    style={{
-                      background: '#fff',
-                      padding: '16px',
-                      borderRadius: 'var(--radius-lg)',
-                      border: isOverStock ? '2px solid #ef4444' : '1px solid var(--color-gray-border)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '16px',
-                      boxShadow: 'var(--shadow-sm)'
-                    }}
+                    className={`cart-item-card ${isOverStock ? 'cart-item-overstock' : ''}`}
                   >
                     <img 
                       src={item.imageUrl} 
                       alt={item.nom} 
-                      style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: 'var(--radius-md)' }} 
+                      className="cart-item-img"
                     />
 
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <h4 style={{ fontSize: '1rem', fontWeight: '800', color: 'var(--color-dark)' }}>{item.nom}</h4>
+                    <div className="cart-item-details">
+                      <div className="cart-item-header">
+                        <h4 className="cart-item-title">{item.nom}</h4>
                         <button 
+                          className="cart-item-delete-btn"
                           onClick={() => removeFromCart(item.cartItemId)}
-                          style={{ color: '#ef4444', fontWeight: '700', fontSize: '0.8rem' }}
                         >
                           ✕ Supprimer
                         </button>
                       </div>
 
-                      <p style={{ fontSize: '0.8rem', color: 'var(--color-gray-medium)', marginTop: '4px' }}>
+                      <p className="cart-item-meta">
                         Couleur : <strong>{item.color}</strong> • Taille : <strong>{item.size}</strong>
                       </p>
 
                       {/* Stock info */}
-                      <div style={{ marginTop: '4px', fontSize: '0.75rem' }}>
+                      <div className="cart-item-stock-info">
                         {maxStock > 5 ? (
                           <span style={{ color: '#16a34a', fontWeight: '700' }}>✓ En stock ({maxStock} restants)</span>
                         ) : maxStock > 0 ? (
@@ -258,7 +249,7 @@ export default function CartPage() {
                         )}
                       </div>
 
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '12px' }}>
+                      <div className="cart-item-bottom-row">
                         <div className="quantity-picker">
                           <button 
                             className="qty-btn" 
@@ -278,7 +269,7 @@ export default function CartPage() {
                         </div>
 
                         <div style={{ textAlign: 'right' }}>
-                          <span style={{ fontSize: '1.1rem', fontWeight: '900', color: 'var(--primary-blue)', display: 'block', lineHeight: 1.1 }}>
+                          <span className="cart-item-price">
                             {formatFCFA(item.prix * item.quantity)}
                           </span>
                         </div>
@@ -290,24 +281,24 @@ export default function CartPage() {
             </div>
 
             {/* Right: Summary & Order form */}
-            <div style={{ background: '#fff', padding: '24px', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-gray-border)', height: 'fit-content', boxShadow: 'var(--shadow-sm)' }}>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: '900', marginBottom: '16px', borderBottom: '1px solid var(--color-gray-border)', paddingBottom: '12px' }}>
+            <div className="cart-summary-box">
+              <h3 className="cart-summary-title">
                 Récapitulatif de Commande
               </h3>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', fontSize: '0.9rem', color: 'var(--color-gray-dark)' }}>
+              <div className="cart-summary-row">
                 <span>Sous-total articles</span>
                 <div style={{ textAlign: 'right' }}>
                   <span style={{ fontWeight: '700', color: '#0f172a', display: 'block' }}>{formatFCFA(cartTotal)}</span>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px', fontSize: '0.9rem', color: 'var(--color-gray-dark)' }}>
+              <div className="cart-summary-row">
                 <span>Livraison Express</span>
                 <span style={{ color: '#059669', fontWeight: '800' }}>Gratuite</span>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--color-gray-border)', paddingTop: '14px', marginBottom: '20px', fontSize: '1.2rem', fontWeight: '900', color: 'var(--color-dark)' }}>
+              <div className="cart-summary-total-row">
                 <span>Total TTC</span>
                 <div style={{ textAlign: 'right' }}>
                   <span style={{ color: 'var(--primary-blue)', display: 'block', fontSize: '1.35rem', fontWeight: '900', lineHeight: 1.1 }}>
@@ -317,28 +308,22 @@ export default function CartPage() {
               </div>
 
               {/* Box Moyen de Paiement Unique: Mobile Money */}
-              <div style={{
-                background: '#f0fdf4',
-                border: '1.5px solid #86efac',
-                borderRadius: '12px',
-                padding: '14px',
-                marginBottom: '20px'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+              <div className="cart-mobile-money-box">
+                <div className="cart-mobile-money-title-row">
                   <span style={{ fontSize: '1.2rem' }}>📱</span>
-                  <span style={{ fontWeight: '900', fontSize: '0.88rem', color: '#065f46' }}>
+                  <h4 style={{ fontWeight: '900', fontSize: '0.88rem', color: '#065f46', margin: 0 }}>
                     Paiement 100% Mobile Money
-                  </span>
+                  </h4>
                 </div>
                 <p style={{ fontSize: '0.78rem', color: '#047857', marginBottom: '8px', lineHeight: '1.4' }}>
                   Le règlement s'effectue exclusivement par transfert aux numéros :
                 </p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.82rem' }}>
-                  <div style={{ background: '#fff', padding: '7px 12px', borderRadius: '8px', border: '1px solid #bbf7d0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div className="cart-mobile-money-num-list">
+                  <div className="cart-mobile-money-num-item">
                     <span style={{ fontWeight: '800', color: '#334155' }}>Numéro 1 :</span>
                     <strong style={{ color: '#059669', fontSize: '0.95rem' }}>+228 99 96 53 06</strong>
                   </div>
-                  <div style={{ background: '#fff', padding: '7px 12px', borderRadius: '8px', border: '1px solid #bbf7d0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div className="cart-mobile-money-num-item">
                     <span style={{ fontWeight: '800', color: '#334155' }}>Numéro 2 :</span>
                     <strong style={{ color: '#059669', fontSize: '0.95rem' }}>+228 96 14 65 04</strong>
                   </div>
@@ -353,10 +338,10 @@ export default function CartPage() {
 
               {/* Checkout Form */}
               {isAuthenticated ? (
-                <form onSubmit={handlePlaceOrder}>
+                <form onSubmit={handlePlaceOrder} className="cart-checkout-form">
                   {/* Phone Number Field (Mandatory for order validation) */}
-                  <div style={{ marginBottom: '14px' }}>
-                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '800', marginBottom: '6px', color: '#0f172a' }}>
+                  <div className="form-group">
+                    <label>
                       Numéro de téléphone / WhatsApp <span style={{ color: '#ef4444' }}>*</span>
                     </label>
                     <input
@@ -366,14 +351,8 @@ export default function CartPage() {
                       placeholder="Ex: +228 90 00 00 00 ou 90000000"
                       required
                       style={{
-                        width: '100%',
-                        padding: '11px 14px',
-                        borderRadius: 'var(--radius-md)',
                         border: !telephone.trim() ? '2px solid #f59e0b' : '1px solid var(--color-gray-light)',
-                        background: !telephone.trim() ? '#fffbeb' : '#ffffff',
-                        fontFamily: 'inherit',
-                        fontSize: '0.9rem',
-                        outline: 'none'
+                        background: !telephone.trim() ? '#fffbeb' : '#ffffff'
                       }}
                     />
                     {!telephone.trim() && (
@@ -384,8 +363,8 @@ export default function CartPage() {
                   </div>
 
                   {/* Delivery Address */}
-                  <div style={{ marginBottom: '18px' }}>
-                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '800', marginBottom: '6px', color: '#0f172a' }}>
+                  <div className="form-group">
+                    <label>
                       Adresse de livraison <span style={{ color: '#ef4444' }}>*</span>
                     </label>
                     <textarea
@@ -394,15 +373,6 @@ export default function CartPage() {
                       onChange={(e) => setShippingAddress(e.target.value)}
                       placeholder="Ex: Quartier Totsi, Lomé - Face Pharmacie des Étoiles"
                       required
-                      style={{
-                        width: '100%',
-                        padding: '11px 14px',
-                        borderRadius: 'var(--radius-md)',
-                        border: '1px solid var(--color-gray-light)',
-                        fontFamily: 'inherit',
-                        fontSize: '0.9rem',
-                        outline: 'none'
-                      }}
                     />
                   </div>
 
@@ -410,7 +380,7 @@ export default function CartPage() {
                     type="submit"
                     disabled={loading}
                     className="btn-checkout-primary"
-                    style={{ width: '100%', padding: '14px', fontSize: '0.95rem' }}
+                    style={{ width: '100%' }}
                   >
                     {loading ? 'Validation en cours...' : `Confirmer par Mobile Money • ${formatFCFA(cartTotal)}`}
                   </button>
